@@ -2,52 +2,27 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 st.set_page_config(
-    page_title="Iron Fighters",
+    page_title="IRON FIGHTERS",
     page_icon="🥊",
     layout="wide",
-    initial_sidebar_state="collapsed"
 )
 
 st.markdown(
     """
     <style>
-        html, body, [data-testid="stAppViewContainer"] {
-            background: #080808;
-        }
-
-        [data-testid="stHeader"] {
-            background: rgba(0,0,0,0);
-        }
-
-        .block-container {
-            padding-top: 1rem;
-            padding-bottom: 0;
-            max-width: 1400px;
-        }
-
-        h1 {
-            text-align: center;
-            color: white;
-            margin-bottom: 5px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #999;
-            margin-bottom: 15px;
-        }
+    .block-container {
+        padding: 0.5rem 1rem 0;
+        max-width: 1400px;
+    }
+    [data-testid="stHeader"] {
+        background: transparent;
+    }
     </style>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
-st.markdown("# 🥊 IRON FIGHTERS")
-st.markdown(
-    '<div class="subtitle">2D Fighting Game · Player vs CPU</div>',
-    unsafe_allow_html=True
-)
-
-game_html = """
+GAME = r"""
 <!DOCTYPE html>
 <html>
 <head>
@@ -60,76 +35,84 @@ game_html = """
 
 body {
     margin: 0;
-    background: #080808;
+    background: #08090d;
     color: white;
     font-family: Arial, sans-serif;
-    overflow: hidden;
-}
-
-#game-wrapper {
-    width: 100%;
-    max-width: 1200px;
-    margin: auto;
 }
 
 #game {
     position: relative;
     width: 100%;
-    height: 680px;
-    background:
-        linear-gradient(
-            to bottom,
-            #171b35 0%,
-            #28365b 55%,
-            #70412e 56%,
-            #161616 57%,
-            #111 100%
-        );
+    max-width: 1250px;
+    height: 720px;
+    margin: auto;
     overflow: hidden;
-    border: 3px solid #333;
-    border-radius: 12px;
-    box-shadow: 0 0 40px rgba(255, 40, 40, 0.15);
+    border: 3px solid #343843;
+    border-radius: 14px;
+    background:
+        radial-gradient(
+            ellipse at 50% 25%,
+            rgba(255,255,255,.15),
+            transparent 30%
+        ),
+        linear-gradient(
+            #182442 0%,
+            #283d68 55%,
+            #633c32 56%,
+            #151515 57%,
+            #090909 100%
+        );
+    box-shadow: 0 20px 70px rgba(0,0,0,.7);
 }
 
-#arena-light {
+#lights {
     position: absolute;
-    width: 300px;
-    height: 300px;
+    top: -100px;
     left: 50%;
-    top: 0;
+    width: 500px;
+    height: 500px;
     transform: translateX(-50%);
     background: radial-gradient(
         ellipse,
-        rgba(255,255,220,0.2),
-        transparent 70%
+        rgba(255,240,190,.22),
+        transparent 68%
     );
 }
 
-.floor-line {
+.floor {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 115px;
-    height: 5px;
-    background: #e5b35a;
-    box-shadow: 0 0 15px #e5b35a;
+    bottom: 122px;
+    height: 6px;
+    background: #d9a64b;
+    box-shadow: 0 0 20px rgba(255,190,80,.5);
+}
+
+.floor2 {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 40px;
+    height: 1px;
+    background: rgba(255,255,255,.08);
 }
 
 #hud {
     position: absolute;
-    left: 25px;
-    right: 25px;
-    top: 20px;
-    display: flex;
+    z-index: 30;
+    top: 18px;
+    left: 22px;
+    right: 22px;
+    display: grid;
+    grid-template-columns: 115px 1fr 70px 1fr 115px;
+    gap: 12px;
     align-items: center;
-    gap: 18px;
-    z-index: 10;
 }
 
 .name {
-    font-weight: bold;
-    font-size: 20px;
-    width: 130px;
+    font-weight: 900;
+    font-size: 19px;
 }
 
 .enemy-name {
@@ -138,93 +121,133 @@ body {
 
 .health {
     height: 28px;
-    background: #222;
+    background: #101114;
     border: 2px solid #ddd;
-    flex: 1;
-    overflow: hidden;
     border-radius: 5px;
+    overflow: hidden;
 }
 
-.health-inner {
+.hp {
     height: 100%;
-    background: linear-gradient(90deg, #19e56d, #aaff44);
     width: 100%;
-    transition: width .15s;
+    background: linear-gradient(
+        #72ff9c,
+        #19b85a
+    );
+    transition: width .12s;
 }
 
-#enemy-health .health-inner {
+#cpuHp {
     float: right;
-    background: linear-gradient(90deg, #ff4949, #ffb347);
+    background: linear-gradient(
+        #ff7575,
+        #d21f35
+    );
 }
 
 #timer {
-    font-size: 34px;
-    font-weight: bold;
-    min-width: 60px;
+    font-size: 36px;
+    font-weight: 900;
     text-align: center;
+}
+
+#combo {
+    position: absolute;
+    z-index: 40;
+    left: 50%;
+    top: 150px;
+    transform: translateX(-50%);
+    font-size: 36px;
+    font-weight: 900;
+    color: #ffe66d;
+    text-shadow: 0 4px 15px #000;
+    opacity: 0;
+    transition: .12s;
+}
+
+#combo.show {
+    opacity: 1;
+}
+
+#stateText {
+    position: absolute;
+    z-index: 40;
+    left: 50%;
+    top: 205px;
+    transform: translateX(-50%);
+    font-size: 20px;
+    font-weight: 800;
+    color: white;
+    opacity: 0;
 }
 
 .fighter {
     position: absolute;
-    width: 70px;
-    height: 160px;
-    bottom: 118px;
-    z-index: 5;
+    width: 82px;
+    height: 185px;
+    bottom: 125px;
+    z-index: 10;
+    transition: filter .05s;
 }
 
-.body {
+.fighter * {
     position: absolute;
-    width: 45px;
-    height: 70px;
-    left: 13px;
-    top: 42px;
-    border-radius: 15px 15px 8px 8px;
 }
 
 .head {
-    position: absolute;
-    width: 48px;
-    height: 48px;
-    left: 11px;
+    width: 52px;
+    height: 52px;
     top: 0;
+    left: 15px;
     border-radius: 50%;
+    z-index: 4;
+}
+
+.body {
+    width: 48px;
+    height: 72px;
+    left: 17px;
+    top: 45px;
+    border-radius: 15px 15px 8px 8px;
+    z-index: 3;
 }
 
 .arm {
-    position: absolute;
-    width: 16px;
-    height: 70px;
-    top: 45px;
-    border-radius: 10px;
+    width: 17px;
+    height: 72px;
+    top: 47px;
+    border-radius: 12px;
     transform-origin: top center;
+    z-index: 2;
 }
 
 .arm1 {
-    left: 5px;
-    transform: rotate(18deg);
+    left: 7px;
+    transform: rotate(20deg);
 }
 
 .arm2 {
     right: 5px;
-    transform: rotate(-18deg);
+    transform: rotate(-20deg);
 }
 
 .leg {
-    position: absolute;
-    width: 18px;
-    height: 65px;
-    top: 105px;
-    border-radius: 10px;
+    width: 19px;
+    height: 72px;
+    top: 108px;
+    border-radius: 12px;
+    transform-origin: top center;
+    z-index: 1;
 }
 
 .leg1 {
-    left: 13px;
-    transform: rotate(7deg);
+    left: 18px;
+    transform: rotate(6deg);
 }
 
 .leg2 {
-    right: 13px;
-    transform: rotate(-7deg);
+    right: 17px;
+    transform: rotate(-6deg);
 }
 
 #player {
@@ -232,263 +255,347 @@ body {
 }
 
 #player .head {
-    background: #f1bd91;
+    background: #e9ae83;
     border: 4px solid #111;
 }
 
-#player .body {
-    background: #2878ff;
-}
-
-#player .arm,
-#player .leg {
-    background: #2878ff;
+#player .body,
+#player .arm {
+    background: #327cff;
 }
 
 #player .leg {
-    background: #173e99;
+    background: #1946a4;
 }
 
 #cpu {
-    left: calc(100% - 230px);
+    left: calc(100% - 245px);
 }
 
 #cpu .head {
-    background: #9f6746;
+    background: #9a6448;
     border: 4px solid #111;
 }
 
-#cpu .body {
-    background: #d52727;
-}
-
-#cpu .arm,
-#cpu .leg {
-    background: #d52727;
+#cpu .body,
+#cpu .arm {
+    background: #df3030;
 }
 
 #cpu .leg {
-    background: #8d1717;
+    background: #941c28;
 }
 
-.fighter.attack .arm2 {
-    transform: rotate(-75deg) translateY(-10px);
+/* idle */
+.fighter.idle .body {
+    animation: idleBody .8s infinite ease-in-out;
 }
 
-.fighter.kick .leg2 {
-    transform: rotate(75deg);
-}
-
-.fighter.hit {
-    animation: hit .15s linear;
-}
-
-@keyframes hit {
+@keyframes idleBody {
     50% {
-        transform: translateX(-12px);
-        filter: brightness(2);
+        transform: translateY(-3px);
     }
+}
+
+/* walk */
+.fighter.walk .leg1 {
+    animation: walk1 .22s infinite alternate;
+}
+
+.fighter.walk .leg2 {
+    animation: walk2 .22s infinite alternate;
+}
+
+@keyframes walk1 {
+    to { transform: rotate(-18deg); }
+}
+
+@keyframes walk2 {
+    to { transform: rotate(18deg); }
+}
+
+/* punch */
+.fighter.punch .arm2 {
+    animation: punch .20s ease-out;
+}
+
+@keyframes punch {
+    0% {
+        transform: rotate(-20deg);
+    }
+    35% {
+        transform: rotate(-90deg);
+        height: 88px;
+    }
+    100% {
+        transform: rotate(-25deg);
+    }
+}
+
+/* kick */
+.fighter.kick .leg2 {
+    animation: kick .28s ease-out;
+}
+
+@keyframes kick {
+    0% {
+        transform: rotate(-6deg);
+    }
+    35% {
+        transform: rotate(78deg);
+        height: 85px;
+    }
+    100% {
+        transform: rotate(-6deg);
+    }
+}
+
+/* special */
+.fighter.special {
+    filter: drop-shadow(
+        0 0 16px #ffe15b
+    );
+}
+
+.fighter.special .arm2 {
+    animation: special .45s ease-out;
+}
+
+@keyframes special {
+    0% {
+        transform: rotate(-20deg);
+    }
+    45% {
+        transform: rotate(-105deg);
+        height: 100px;
+    }
+    100% {
+        transform: rotate(-20deg);
+    }
+}
+
+/* jump */
+.fighter.jump .body {
+    transform: rotate(-5deg);
+}
+
+/* guard */
+.fighter.guard {
+    filter: brightness(1.3);
+}
+
+.fighter.guard .arm1 {
+    transform: rotate(55deg);
+}
+
+.fighter.guard .arm2 {
+    transform: rotate(-55deg);
+}
+
+/* hit */
+.fighter.hit {
+    animation: hurt .14s linear;
+    filter: brightness(2.1);
+}
+
+@keyframes hurt {
+    50% {
+        transform: translateX(-15px) rotate(-5deg);
+    }
+}
+
+/* stun */
+.fighter.stun {
+    filter: brightness(1.7);
+}
+
+/* down */
+.fighter.down {
+    transform: rotate(88deg) translateY(45px);
+    transform-origin: bottom center;
+    opacity: .8;
+}
+
+/* direction */
+.fighter.flip {
+    transform: scaleX(-1);
 }
 
 #message {
     position: absolute;
+    z-index: 50;
     left: 50%;
-    top: 44%;
-    transform: translate(-50%, -50%);
-    font-size: 54px;
-    font-weight: 900;
-    text-shadow: 0 4px 20px black;
-    display: none;
-    z-index: 20;
+    top: 43%;
+    transform: translate(-50%,-50%);
+    font-size: 62px;
+    font-weight: 1000;
     text-align: center;
+    text-shadow: 0 5px 25px #000;
+    display: none;
 }
 
-#controls {
+#start {
     position: absolute;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #ddd;
-    font-size: 15px;
-    background: rgba(0,0,0,.65);
-    padding: 9px 18px;
-    border-radius: 20px;
-    z-index: 20;
-}
-
-#start-screen {
-    position: absolute;
+    z-index: 100;
     inset: 0;
-    background: rgba(0,0,0,.82);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    z-index: 30;
+    background: rgba(0,0,0,.84);
 }
 
-#start-screen h2 {
-    font-size: 52px;
-    margin: 0 0 20px;
+#start h1 {
+    font-size: 56px;
+    margin: 0 0 8px;
+}
+
+#start p {
+    color: #bbb;
+    margin-bottom: 25px;
 }
 
 button {
-    border: none;
-    padding: 15px 38px;
-    font-size: 20px;
-    font-weight: bold;
+    border: 0;
     border-radius: 8px;
-    background: #e52d2d;
+    padding: 14px 35px;
+    background: #df3030;
     color: white;
+    font-size: 20px;
+    font-weight: 900;
     cursor: pointer;
 }
 
 button:hover {
-    background: #ff4444;
+    background: #ff4848;
 }
 
-#mobile-controls {
-    display: none;
+#controls {
+    position: absolute;
+    z-index: 60;
+    bottom: 17px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 9px 18px;
+    border-radius: 20px;
+    background: rgba(0,0,0,.72);
+    color: #ddd;
+    white-space: nowrap;
 }
 
-@media (max-width: 700px) {
+#flash {
+    position: absolute;
+    z-index: 45;
+    pointer-events: none;
+    inset: 0;
+    opacity: 0;
+    background: white;
+}
+
+#flash.on {
+    animation: flash .12s;
+}
+
+@keyframes flash {
+    0% { opacity: .7; }
+    100% { opacity: 0; }
+}
+
+@media(max-width:700px) {
+
     #game {
-        height: 560px;
+        height: 600px;
     }
 
-    #mobile-controls {
-        display: flex;
-        position: absolute;
-        bottom: 15px;
-        left: 15px;
-        right: 15px;
-        justify-content: space-between;
-        z-index: 25;
-    }
-
-    .mobile-group {
-        display: flex;
-        gap: 8px;
-    }
-
-    .mobile-btn {
-        width: 55px;
-        height: 55px;
-        padding: 0;
-        font-size: 15px;
-        background: rgba(0,0,0,.7);
-        border: 1px solid #777;
-    }
-
-    #controls {
-        display: none;
+    #hud {
+        grid-template-columns: 65px 1fr 45px 1fr 65px;
+        gap: 5px;
     }
 
     .name {
-        font-size: 13px;
-        width: 70px;
+        font-size: 11px;
     }
 
     #timer {
-        font-size: 25px;
-        min-width: 40px;
+        font-size: 24px;
     }
+
+    #controls {
+        white-space: normal;
+        text-align: center;
+        font-size: 11px;
+    }
+
 }
 </style>
 </head>
 
 <body>
 
-<div id="game-wrapper">
-
 <div id="game">
 
-<div id="arena-light"></div>
-<div class="floor-line"></div>
+<div id="lights"></div>
+<div class="floor"></div>
+<div class="floor2"></div>
 
 <div id="hud">
 
     <div class="name">PLAYER</div>
 
     <div class="health">
-        <div id="player-hp" class="health-inner"></div>
+        <div id="playerHp" class="hp"></div>
     </div>
 
     <div id="timer">60</div>
 
-    <div class="health" id="enemy-health">
-        <div id="cpu-hp" class="health-inner"></div>
+    <div class="health">
+        <div id="cpuHp" class="hp"></div>
     </div>
 
     <div class="name enemy-name">CPU</div>
 
 </div>
 
-<div id="player" class="fighter">
+<div id="combo">3 HIT COMBO</div>
+<div id="stateText">COUNTER</div>
 
+<div id="player" class="fighter idle">
     <div class="head"></div>
     <div class="body"></div>
-
     <div class="arm arm1"></div>
     <div class="arm arm2"></div>
-
     <div class="leg leg1"></div>
     <div class="leg leg2"></div>
-
 </div>
 
-<div id="cpu" class="fighter">
-
+<div id="cpu" class="fighter idle">
     <div class="head"></div>
     <div class="body"></div>
-
     <div class="arm arm1"></div>
     <div class="arm arm2"></div>
-
     <div class="leg leg1"></div>
     <div class="leg leg2"></div>
-
 </div>
+
+<div id="flash"></div>
 
 <div id="message"></div>
 
 <div id="controls">
-    ← → 이동 &nbsp; | &nbsp;
-    ↑ 점프 &nbsp; | &nbsp;
-    A 펀치 &nbsp; | &nbsp;
-    S 킥 &nbsp; | &nbsp;
-    D 필살기
+    ← → 이동　↑ 점프　A 펀치　S 킥　D 필살기　　가만히 있으면 자동 가드
 </div>
 
-<div id="mobile-controls">
+<div id="start">
 
-    <div class="mobile-group">
-        <button class="mobile-btn" id="leftBtn">←</button>
-        <button class="mobile-btn" id="rightBtn">→</button>
-        <button class="mobile-btn" id="jumpBtn">↑</button>
-    </div>
-
-    <div class="mobile-group">
-        <button class="mobile-btn" id="punchBtn">A</button>
-        <button class="mobile-btn" id="kickBtn">S</button>
-        <button class="mobile-btn" id="specialBtn">D</button>
-    </div>
-
-</div>
-
-<div id="start-screen">
-
-    <h2>IRON FIGHTERS</h2>
+    <h1>IRON FIGHTERS</h1>
 
     <p>
-        Player vs CPU
+        2D Fighting Game
     </p>
 
-    <button id="startBtn">
+    <button id="startButton">
         FIGHT!
     </button>
-
-</div>
 
 </div>
 
@@ -498,255 +605,500 @@ button:hover {
 
 const game = document.getElementById("game");
 
-const player = document.getElementById("player");
-const cpu = document.getElementById("cpu");
+const playerEl = document.getElementById("player");
+const cpuEl = document.getElementById("cpu");
 
-const playerHPBar = document.getElementById("player-hp");
-const cpuHPBar = document.getElementById("cpu-hp");
+const playerHpEl = document.getElementById("playerHp");
+const cpuHpEl = document.getElementById("cpuHp");
 
-const timerElement = document.getElementById("timer");
-const message = document.getElementById("message");
+const timerEl = document.getElementById("timer");
 
-const startScreen = document.getElementById("start-screen");
-const startBtn = document.getElementById("startBtn");
+const comboEl = document.getElementById("combo");
+const stateText = document.getElementById("stateText");
+
+const messageEl = document.getElementById("message");
+const startEl = document.getElementById("start");
+const startButton = document.getElementById("startButton");
+
+const flashEl = document.getElementById("flash");
 
 let running = false;
 
-let playerX = 160;
-let cpuX = 800;
+const keys = {};
 
-let playerY = 0;
-let cpuY = 0;
-
-let playerHP = 100;
-let cpuHP = 100;
-
-let playerVelocityY = 0;
-let cpuVelocityY = 0;
-
-let keys = {};
+let lastTime = performance.now();
 
 let timer = 60;
+let timerAccumulator = 0;
 
-let playerCooldown = 0;
-let cpuCooldown = 0;
+let player;
+let cpu;
 
-let cpuDirectionTimer = 0;
+let particles = [];
 
-let animationFrame;
+const ATTACKS = {
 
-document.addEventListener("keydown", function(e) {
+    punch: {
+        startup: 7,
+        active: 5,
+        recovery: 15,
+        range: 105,
+        damage: 6,
+        hitstun: 16,
+        knockback: 7,
+        guardDamage: 1
+    },
 
-    keys[e.key.toLowerCase()] = true;
+    kick: {
+        startup: 11,
+        active: 6,
+        recovery: 20,
+        range: 125,
+        damage: 10,
+        hitstun: 22,
+        knockback: 12,
+        guardDamage: 2
+    },
 
-    if (
-        ["arrowleft", "arrowright", "arrowup", " "]
-        .includes(e.key.toLowerCase())
-    ) {
-        e.preventDefault();
+    special: {
+        startup: 18,
+        active: 9,
+        recovery: 32,
+        range: 165,
+        damage: 19,
+        hitstun: 34,
+        knockback: 24,
+        guardDamage: 4
     }
 
-});
-
-document.addEventListener("keyup", function(e) {
-    keys[e.key.toLowerCase()] = false;
-});
+};
 
 
-function clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
+function fighter(x, isCPU) {
+
+    return {
+
+        x: x,
+        y: 0,
+
+        vx: 0,
+        vy: 0,
+
+        hp: 100,
+
+        facing: isCPU ? -1 : 1,
+
+        state: "idle",
+
+        stateTimer: 0,
+
+        attack: null,
+
+        attackFrame: 0,
+
+        hitstun: 0,
+
+        blockstun: 0,
+
+        knockdown: 0,
+
+        combo: 0,
+
+        comboTimer: 0,
+
+        isCPU: isCPU,
+
+        aiTimer: 0,
+
+        aiAttackTimer: 0,
+
+        aiBlockTimer: 0
+
+    };
+
 }
 
 
-function distance() {
-    return Math.abs(
-        (playerX + 35) - (cpuX + 35)
-    );
-}
+function resetGame() {
 
+    player = fighter(170, false);
 
-function startGame() {
+    cpu = fighter(game.clientWidth - 250, true);
+
+    timer = 60;
+    timerAccumulator = 0;
 
     running = true;
 
-    playerX = 160;
-    cpuX = game.clientWidth - 230;
+    messageEl.style.display = "none";
 
-    playerY = 0;
-    cpuY = 0;
+    startEl.style.display = "none";
 
-    playerHP = 100;
-    cpuHP = 100;
+    lastTime = performance.now();
 
-    playerVelocityY = 0;
-    cpuVelocityY = 0;
-
-    timer = 60;
-
-    playerCooldown = 0;
-    cpuCooldown = 0;
-
-    message.style.display = "none";
-
-    startScreen.style.display = "none";
-
-    updateBars();
-
-    cancelAnimationFrame(animationFrame);
-
-    gameLoop();
+    requestAnimationFrame(loop);
 
 }
 
 
-function updateBars() {
+function clamp(v, min, max) {
 
-    playerHPBar.style.width = playerHP + "%";
-    cpuHPBar.style.width = cpuHP + "%";
+    return Math.max(
+        min,
+        Math.min(max, v)
+    );
 
 }
 
 
-function jump(character) {
+function dist(a,b) {
 
-    if (character === "player") {
+    return Math.abs(
+        a.x - b.x
+    );
 
-        if (playerY === 0) {
-            playerVelocityY = 15;
-        }
+}
 
+
+function facingOpponent(f, opponent) {
+
+    if (opponent.x > f.x) {
+        f.facing = 1;
     } else {
+        f.facing = -1;
+    }
 
-        if (cpuY === 0) {
-            cpuVelocityY = 15;
-        }
+}
+
+
+function isAttacking(f) {
+
+    return f.attack !== null;
+
+}
+
+
+function isBusy(f) {
+
+    return (
+        f.hitstun > 0 ||
+        f.blockstun > 0 ||
+        f.knockdown > 0
+    );
+
+}
+
+
+function autoGuard(f, opponent) {
+
+    if (isBusy(f)) {
+        return false;
+    }
+
+    if (f.attack) {
+        return false;
+    }
+
+    if (f.isCPU) {
+
+        return f.aiBlockTimer > 0;
+
+    }
+
+    const near = dist(f, opponent) < 185;
+
+    const movement =
+        keys["arrowleft"] ||
+        keys["arrowright"] ||
+        keys["arrowup"] ||
+        keys["a"] ||
+        keys["s"] ||
+        keys["d"];
+
+    return near && !movement;
+
+}
+
+
+function startAttack(f, type) {
+
+    if (!running) {
+        return;
+    }
+
+    if (isBusy(f)) {
+        return;
+    }
+
+    if (f.attack) {
+        return;
+    }
+
+    const a = ATTACKS[type];
+
+    f.attack = type;
+    f.attackFrame = 0;
+
+    f.stateTimer =
+        a.startup +
+        a.active +
+        a.recovery;
+
+}
+
+
+function attackActive(f) {
+
+    if (!f.attack) {
+        return false;
+    }
+
+    const a = ATTACKS[f.attack];
+
+    return (
+        f.attackFrame >= a.startup &&
+        f.attackFrame <
+        a.startup + a.active
+    );
+
+}
+
+
+function canHit(attacker, defender) {
+
+    const a = ATTACKS[attacker.attack];
+
+    if (!a) {
+        return false;
+    }
+
+    const d = dist(
+        attacker,
+        defender
+    );
+
+    if (d > a.range) {
+        return false;
+    }
+
+    if (Math.abs(
+        attacker.y - defender.y
+    ) > 85) {
+        return false;
+    }
+
+    const direction =
+        Math.sign(
+            defender.x -
+            attacker.x
+        );
+
+    return direction === attacker.facing;
+
+}
+
+
+function spawnHit(x, y, color) {
+
+    for (let i = 0; i < 14; i++) {
+
+        particles.push({
+
+            x: x,
+            y: y,
+
+            vx:
+                (Math.random() - .5) * 11,
+
+            vy:
+                (Math.random() - .5) * 11,
+
+            life: 25,
+
+            color: color
+
+        });
 
     }
 
 }
 
 
-function attack(attacker, type) {
+function showState(text) {
 
-    if (!running) return;
+    stateText.innerText = text;
 
-    if (attacker === "player") {
+    stateText.style.opacity = "1";
 
-        if (playerCooldown > 0) return;
+    setTimeout(() => {
 
-        playerCooldown =
-            type === "special" ? 50 : 25;
+        stateText.style.opacity = "0";
 
-        player.classList.remove("attack");
-        player.classList.remove("kick");
+    }, 400);
 
-        if (type === "punch") {
+}
 
-            player.classList.add("attack");
 
-        } else {
+function showCombo(f) {
 
-            player.classList.add("kick");
+    if (f.combo < 2) {
+        return;
+    }
 
-        }
+    comboEl.innerText =
+        f.combo + " HIT COMBO";
 
+    comboEl.classList.add("show");
+
+    clearTimeout(showCombo.timeout);
+
+    showCombo.timeout =
         setTimeout(() => {
 
-            player.classList.remove("attack");
-            player.classList.remove("kick");
+            comboEl.classList.remove("show");
 
-        }, 180);
+        }, 650);
 
-        let range =
-            type === "special" ? 145 : 100;
+}
 
-        if (distance() < range) {
 
-            let damage;
+function hit(attacker, defender) {
 
-            if (type === "punch") {
-                damage = 7;
-            }
+    const a =
+        ATTACKS[attacker.attack];
 
-            else if (type === "kick") {
-                damage = 10;
-            }
+    if (!a) {
+        return;
+    }
 
-            else {
-                damage = 20;
-            }
+    if (!canHit(attacker, defender)) {
+        return;
+    }
 
-            cpuHP -= damage;
+    if (defender.hitstun > 0) {
+        return;
+    }
 
-            cpu.classList.add("hit");
+    const guarding =
+        autoGuard(
+            defender,
+            attacker
+        );
 
-            setTimeout(() => {
-                cpu.classList.remove("hit");
-            }, 150);
+    if (guarding) {
 
-            updateBars();
+        const damage =
+            Math.max(
+                1,
+                Math.floor(
+                    a.guardDamage
+                )
+            );
+
+        defender.hp -= damage;
+
+        defender.blockstun = 12;
+
+        defender.vx =
+            attacker.facing * 2;
+
+        defender.state = "guard";
+
+        spawnHit(
+            defender.x,
+            defender.y + 90,
+            "#8fdcff"
+        );
+
+        showState("GUARD");
+
+        attacker.combo = 0;
+
+        return;
+    }
+
+    defender.hp -= a.damage;
+
+    defender.hitstun =
+        a.hitstun;
+
+    defender.vx =
+        attacker.facing *
+        a.knockback;
+
+    defender.state = "hit";
+
+    attacker.combo++;
+
+    attacker.comboTimer = 45;
+
+    spawnHit(
+        defender.x,
+        defender.y + 85,
+        "#ffe15b"
+    );
+
+    flashEl.classList.remove("on");
+
+    void flashEl.offsetWidth;
+
+    flashEl.classList.add("on");
+
+    showCombo(attacker);
+
+    if (
+        a.knockback >= 20
+    ) {
+
+        defender.knockdown = 38;
+
+    }
+
+}
+
+
+function updateAttack(f, opponent) {
+
+    if (!f.attack) {
+        return;
+    }
+
+    f.attackFrame++;
+
+    if (
+        attackActive(f)
+    ) {
+
+        if (!f.attackHasHit) {
+
+            hit(
+                f,
+                opponent
+            );
+
+            f.attackHasHit = true;
 
         }
 
     }
 
-    else {
+    const a =
+        ATTACKS[f.attack];
 
-        if (cpuCooldown > 0) return;
+    const total =
+        a.startup +
+        a.active +
+        a.recovery;
 
-        cpuCooldown =
-            type === "special" ? 65 : 35;
+    if (
+        f.attackFrame >= total
+    ) {
 
-        cpu.classList.remove("attack");
-        cpu.classList.remove("kick");
+        f.attack = null;
 
-        if (type === "punch") {
+        f.attackFrame = 0;
 
-            cpu.classList.add("attack");
-
-        } else {
-
-            cpu.classList.add("kick");
-
-        }
-
-        setTimeout(() => {
-
-            cpu.classList.remove("attack");
-            cpu.classList.remove("kick");
-
-        }, 180);
-
-        let range =
-            type === "special" ? 140 : 95;
-
-        if (distance() < range) {
-
-            let damage;
-
-            if (type === "punch") {
-                damage = 6;
-            }
-
-            else if (type === "kick") {
-                damage = 9;
-            }
-
-            else {
-                damage = 16;
-            }
-
-            playerHP -= damage;
-
-            player.classList.add("hit");
-
-            setTimeout(() => {
-                player.classList.remove("hit");
-            }, 150);
-
-            updateBars();
-
-        }
+        f.attackHasHit = false;
 
     }
 
@@ -755,118 +1107,426 @@ function attack(attacker, type) {
 
 function updatePlayer() {
 
+    if (!running) {
+        return;
+    }
+
+    facingOpponent(
+        player,
+        cpu
+    );
+
+    if (
+        player.knockdown > 0
+    ) {
+
+        player.knockdown--;
+
+        player.vx *= .90;
+
+        return;
+
+    }
+
+    if (
+        player.hitstun > 0
+    ) {
+
+        player.hitstun--;
+
+        player.vx *= .88;
+
+        player.x += player.vx;
+
+        return;
+
+    }
+
+    if (
+        player.blockstun > 0
+    ) {
+
+        player.blockstun--;
+
+        player.vx *= .85;
+
+        player.x += player.vx;
+
+        return;
+
+    }
+
+    if (player.attack) {
+
+        updateAttack(
+            player,
+            cpu
+        );
+
+        return;
+
+    }
+
+    let moving = false;
+
     if (keys["arrowleft"]) {
-        playerX -= 5;
+
+        player.x -= 5;
+
+        moving = true;
+
     }
 
     if (keys["arrowright"]) {
-        playerX += 5;
+
+        player.x += 5;
+
+        moving = true;
+
     }
 
-    if (keys["arrowup"]) {
+    if (
+        keys["arrowup"] &&
+        player.y === 0
+    ) {
 
-        if (playerY === 0) {
-            playerVelocityY = 15;
-        }
+        player.vy = 14;
 
     }
 
     if (keys["a"]) {
-        attack("player", "punch");
-    }
 
-    if (keys["s"]) {
-        attack("player", "kick");
-    }
-
-    if (keys["d"]) {
-        attack("player", "special");
-    }
-
-    playerVelocityY -= 0.8;
-
-    playerY += playerVelocityY;
-
-    if (playerY < 0) {
-
-        playerY = 0;
-        playerVelocityY = 0;
-
-    }
-
-    playerX =
-        clamp(
-            playerX,
-            20,
-            game.clientWidth - 100
+        startAttack(
+            player,
+            "punch"
         );
+
+    }
+
+    else if (keys["s"]) {
+
+        startAttack(
+            player,
+            "kick"
+        );
+
+    }
+
+    else if (keys["d"]) {
+
+        startAttack(
+            player,
+            "special"
+        );
+
+    }
+
+    player.vy -= .75;
+
+    player.y += player.vy;
+
+    if (player.y < 0) {
+
+        player.y = 0;
+
+        player.vy = 0;
+
+    }
+
+    player.x =
+        clamp(
+            player.x,
+            25,
+            game.clientWidth - 105
+        );
+
+    player.state =
+        player.y > 0
+        ? "jump"
+        : moving
+        ? "walk"
+        : autoGuard(player,cpu)
+        ? "guard"
+        : "idle";
 
 }
 
 
 function updateCPU() {
 
-    let d = distance();
+    if (!running) {
+        return;
+    }
 
-    if (d > 115) {
+    facingOpponent(
+        cpu,
+        player
+    );
 
-        if (playerX < cpuX) {
-            cpuX -= 2.4;
+    if (
+        cpu.knockdown > 0
+    ) {
+
+        cpu.knockdown--;
+
+        cpu.vx *= .90;
+
+        return;
+
+    }
+
+    if (
+        cpu.hitstun > 0
+    ) {
+
+        cpu.hitstun--;
+
+        cpu.vx *= .88;
+
+        cpu.x += cpu.vx;
+
+        return;
+
+    }
+
+    if (
+        cpu.blockstun > 0
+    ) {
+
+        cpu.blockstun--;
+
+        cpu.vx *= .85;
+
+        cpu.x += cpu.vx;
+
+        return;
+
+    }
+
+    if (cpu.attack) {
+
+        updateAttack(
+            cpu,
+            player
+        );
+
+        return;
+
+    }
+
+    const d =
+        dist(cpu,player);
+
+    cpu.aiTimer++;
+
+    /*
+       CPU가 공격을 맞을 것 같으면
+       가끔 자동으로 가드한다.
+    */
+
+    if (
+        d < 190 &&
+        Math.random() < .018
+    ) {
+
+        cpu.aiBlockTimer =
+            30 +
+            Math.floor(
+                Math.random() * 25
+            );
+
+    }
+
+    if (
+        cpu.aiBlockTimer > 0
+    ) {
+
+        cpu.aiBlockTimer--;
+
+        cpu.state = "guard";
+
+        return;
+
+    }
+
+    if (d > 125) {
+
+        if (
+            player.x < cpu.x
+        ) {
+
+            cpu.x -= 2.5;
+
         } else {
-            cpuX += 2.4;
+
+            cpu.x += 2.5;
+
         }
 
-    } else {
+        cpu.state = "walk";
 
-        cpuDirectionTimer++;
+    }
 
-        if (cpuDirectionTimer % 55 === 0) {
+    else {
 
-            let r = Math.random();
+        const chance =
+            Math.random();
 
-            if (r < 0.5) {
+        if (
+            cpu.aiTimer % 30 === 0
+        ) {
 
-                attack("cpu", "punch");
+            if (chance < .48) {
 
-            } else if (r < 0.85) {
+                startAttack(
+                    cpu,
+                    "punch"
+                );
 
-                attack("cpu", "kick");
+            }
 
-            } else {
+            else if (
+                chance < .83
+            ) {
 
-                attack("cpu", "special");
+                startAttack(
+                    cpu,
+                    "kick"
+                );
+
+            }
+
+            else {
+
+                startAttack(
+                    cpu,
+                    "special"
+                );
 
             }
 
         }
 
-    }
-
-    if (
-        Math.random() < 0.002 &&
-        cpuY === 0
-    ) {
-
-        cpuVelocityY = 15;
+        cpu.state =
+            autoGuard(cpu,player)
+            ? "guard"
+            : "idle";
 
     }
 
-    cpuVelocityY -= 0.8;
-
-    cpuY += cpuVelocityY;
-
-    if (cpuY < 0) {
-
-        cpuY = 0;
-        cpuVelocityY = 0;
-
-    }
-
-    cpuX =
+    cpu.x =
         clamp(
-            cpuX,
-            20,
-            game.clientWidth - 100
+            cpu.x,
+            25,
+            game.clientWidth - 105
+        );
+
+}
+
+
+function updatePhysics() {
+
+    player.x += player.vx;
+    cpu.x += cpu.vx;
+
+    player.vx *= .85;
+    cpu.vx *= .85;
+
+    player.x =
+        clamp(
+            player.x,
+            25,
+            game.clientWidth - 105
+        );
+
+    cpu.x =
+        clamp(
+            cpu.x,
+            25,
+            game.clientWidth - 105
+        );
+
+}
+
+
+function updateCombos() {
+
+    if (player.comboTimer > 0) {
+
+        player.comboTimer--;
+
+    } else {
+
+        player.combo = 0;
+
+    }
+
+    if (cpu.comboTimer > 0) {
+
+        cpu.comboTimer--;
+
+    } else {
+
+        cpu.combo = 0;
+
+    }
+
+}
+
+
+function renderFighter(f, el) {
+
+    el.style.left =
+        f.x + "px";
+
+    el.style.bottom =
+        (125 + f.y) + "px";
+
+    el.className =
+        "fighter " +
+        f.state;
+
+    if (f.facing < 0) {
+
+        el.classList.add("flip");
+
+    }
+
+    if (f.attack) {
+
+        el.classList.add(
+            f.attack
+        );
+
+    }
+
+    if (f.hitstun > 0) {
+
+        el.classList.add("stun");
+
+    }
+
+}
+
+
+function renderParticles() {
+
+    particles.forEach(
+        p => {
+
+            p.x += p.vx;
+            p.y += p.vy;
+
+            p.vy += .35;
+
+            p.life--;
+
+        }
+    );
+
+    particles =
+        particles.filter(
+            p => p.life > 0
         );
 
 }
@@ -874,13 +1534,30 @@ function updateCPU() {
 
 function render() {
 
-    player.style.left = playerX + "px";
-    player.style.bottom =
-        (118 + playerY) + "px";
+    renderFighter(
+        player,
+        playerEl
+    );
 
-    cpu.style.left = cpuX + "px";
-    cpu.style.bottom =
-        (118 + cpuY) + "px";
+    renderFighter(
+        cpu,
+        cpuEl
+    );
+
+    playerHpEl.style.width =
+        Math.max(
+            0,
+            player.hp
+        ) + "%";
+
+    cpuHpEl.style.width =
+        Math.max(
+            0,
+            cpu.hp
+        ) + "%";
+
+    timerEl.innerText =
+        timer;
 
 }
 
@@ -889,147 +1566,187 @@ function gameOver(text) {
 
     running = false;
 
-    message.innerHTML = text;
+    messageEl.innerText =
+        text;
 
-    message.style.display = "block";
+    messageEl.style.display =
+        "block";
 
-    startScreen.style.display = "flex";
+    startEl.style.display =
+        "flex";
 
-    startBtn.innerText = "REMATCH";
+    startButton.innerText =
+        "REMATCH";
 
 }
 
 
-let lastSecond = Date.now();
+function updateTimer(dt) {
 
+    timerAccumulator += dt;
 
-function gameLoop() {
+    if (
+        timerAccumulator >= 1000
+    ) {
 
-    if (!running) return;
+        timerAccumulator -= 1000;
 
-    if (playerCooldown > 0) {
-        playerCooldown--;
+        timer--;
+
+        if (timer <= 0) {
+
+            if (
+                player.hp >
+                cpu.hp
+            ) {
+
+                gameOver(
+                    "PLAYER WINS!"
+                );
+
+            }
+
+            else if (
+                cpu.hp >
+                player.hp
+            ) {
+
+                gameOver(
+                    "CPU WINS!"
+                );
+
+            }
+
+            else {
+
+                gameOver(
+                    "DRAW!"
+                );
+
+            }
+
+        }
+
     }
 
-    if (cpuCooldown > 0) {
-        cpuCooldown--;
+}
+
+
+function checkGameOver() {
+
+    if (
+        player.hp <= 0
+    ) {
+
+        player.state =
+            "down";
+
+        gameOver(
+            "CPU WINS!"
+        );
+
     }
+
+    else if (
+        cpu.hp <= 0
+    ) {
+
+        cpu.state =
+            "down";
+
+        gameOver(
+            "PLAYER WINS!"
+        );
+
+    }
+
+}
+
+
+function loop(now) {
+
+    if (!running) {
+        return;
+    }
+
+    const dt =
+        Math.min(
+            40,
+            now - lastTime
+        );
+
+    lastTime = now;
 
     updatePlayer();
     updateCPU();
 
+    updatePhysics();
+
+    updateCombos();
+
+    updateTimer(dt);
+
+    renderParticles();
+
     render();
 
-    if (playerHP <= 0) {
+    checkGameOver();
 
-        gameOver("CPU WINS!");
+    if (running) {
 
-        return;
-
-    }
-
-    if (cpuHP <= 0) {
-
-        gameOver("PLAYER WINS!");
-
-        return;
+        requestAnimationFrame(
+            loop
+        );
 
     }
-
-    if (Date.now() - lastSecond >= 1000) {
-
-        timer--;
-
-        timerElement.innerText = timer;
-
-        lastSecond = Date.now();
-
-        if (timer <= 0) {
-
-            if (playerHP > cpuHP) {
-                gameOver("PLAYER WINS!");
-            }
-
-            else if (cpuHP > playerHP) {
-                gameOver("CPU WINS!");
-            }
-
-            else {
-                gameOver("DRAW!");
-            }
-
-            return;
-
-        }
-
-    }
-
-    animationFrame =
-        requestAnimationFrame(gameLoop);
 
 }
 
 
-startBtn.addEventListener(
+document.addEventListener(
+    "keydown",
+    e => {
+
+        keys[
+            e.key.toLowerCase()
+        ] = true;
+
+        if (
+            [
+                "arrowleft",
+                "arrowright",
+                "arrowup",
+                " "
+            ].includes(
+                e.key.toLowerCase()
+            )
+        ) {
+
+            e.preventDefault();
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "keyup",
+    e => {
+
+        keys[
+            e.key.toLowerCase()
+        ] = false;
+
+    }
+);
+
+
+startButton.addEventListener(
     "click",
-    startGame
+    resetGame
 );
 
-
-function mobileHold(button, key) {
-
-    button.addEventListener(
-        "touchstart",
-        function(e) {
-
-            e.preventDefault();
-            keys[key] = true;
-
-        }
-    );
-
-    button.addEventListener(
-        "touchend",
-        function(e) {
-
-            e.preventDefault();
-            keys[key] = false;
-
-        }
-    );
-
-}
-
-
-mobileHold(
-    document.getElementById("leftBtn"),
-    "arrowleft"
-);
-
-mobileHold(
-    document.getElementById("rightBtn"),
-    "arrowright"
-);
-
-mobileHold(
-    document.getElementById("jumpBtn"),
-    "arrowup"
-);
-
-mobileHold(
-    document.getElementById("punchBtn"),
-    "a"
-);
-
-mobileHold(
-    document.getElementById("kickBtn"),
-    "s"
-);
-
-mobileHold(
-    document.getElementById("specialBtn"),
-    "d"
-);
 
 </script>
 
@@ -1038,7 +1755,7 @@ mobileHold(
 """
 
 components.html(
-    game_html,
-    height=720,
+    GAME,
+    height=750,
     scrolling=False
 )
