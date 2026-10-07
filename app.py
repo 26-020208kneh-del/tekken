@@ -28,7 +28,9 @@ iframe {
 GAME = r"""
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
+
 <meta charset="UTF-8">
 
 <style>
@@ -54,6 +56,7 @@ body {
         sans-serif;
 }
 
+
 #game {
 
     position: relative;
@@ -70,8 +73,8 @@ body {
     background:
 
         radial-gradient(
-            ellipse at 50% 30%,
-            rgba(100,120,170,.20),
+            ellipse at 50% 25%,
+            rgba(100,120,170,.24),
             transparent 45%
         ),
 
@@ -92,32 +95,43 @@ body {
 }
 
 
-/* ==============================
-   배경
-============================== */
+#canvas {
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    z-index: 10;
+}
+
 
 #backLight {
 
     position: absolute;
 
-    width: 600px;
-    height: 600px;
+    width: 650px;
+    height: 650px;
 
     left: 50%;
-    top: -250px;
+    top: -280px;
 
     transform:
         translateX(-50%);
 
     background:
-
         radial-gradient(
             ellipse,
-            rgba(255,255,255,.15),
+            rgba(255,255,255,.14),
             transparent 68%
         );
 
     pointer-events: none;
+
+    z-index: 1;
 }
 
 
@@ -138,6 +152,8 @@ body {
     box-shadow:
         0 0 15px
         rgba(255,190,60,.45);
+
+    z-index: 5;
 }
 
 
@@ -169,12 +185,14 @@ body {
 
     background-size:
         40px 40px;
+
+    z-index: 3;
 }
 
 
-/* ==============================
+/* =========================
    HUD
-============================== */
+========================= */
 
 #hud {
 
@@ -222,7 +240,7 @@ body {
 
 .hp {
 
-    height: 25px;
+    height: 27px;
 
     background:
         #080808;
@@ -279,9 +297,9 @@ body {
 }
 
 
-/* ==============================
+/* =========================
    COMBO
-============================== */
+========================= */
 
 #combo {
 
@@ -290,7 +308,7 @@ body {
     z-index: 80;
 
     left: 50%;
-    top: 110px;
+    top: 115px;
 
     transform:
         translateX(-50%)
@@ -300,7 +318,7 @@ body {
 
     color: #ffd94d;
 
-    font-size: 38px;
+    font-size: 40px;
 
     font-weight: 1000;
 
@@ -330,12 +348,12 @@ body {
     z-index: 80;
 
     left: 50%;
-    top: 165px;
+    top: 168px;
 
     transform:
         translateX(-50%);
 
-    font-size: 19px;
+    font-size: 20px;
 
     font-weight: 1000;
 
@@ -349,9 +367,9 @@ body {
 }
 
 
-/* ==============================
+/* =========================
    KO
-============================== */
+========================= */
 
 #message {
 
@@ -367,7 +385,7 @@ body {
 
     color: #fff;
 
-    font-size: 62px;
+    font-size: 65px;
 
     font-weight: 1000;
 
@@ -380,9 +398,9 @@ body {
 }
 
 
-/* ==============================
-   SKILL
-============================== */
+/* =========================
+   SKILLS
+========================= */
 
 #skills {
 
@@ -406,8 +424,8 @@ body {
 
     position: relative;
 
-    width: 66px;
-    height: 42px;
+    width: 68px;
+    height: 43px;
 
     overflow: hidden;
 
@@ -447,7 +465,7 @@ body {
 
     z-index: 4;
 
-    line-height: 38px;
+    line-height: 39px;
 
     color: white;
 
@@ -474,9 +492,9 @@ body {
 }
 
 
-/* ==============================
-   안내
-============================== */
+/* =========================
+   HINT
+========================= */
 
 #hint {
 
@@ -485,7 +503,7 @@ body {
     z-index: 60;
 
     left: 50%;
-    bottom: 67px;
+    bottom: 69px;
 
     transform:
         translateX(-50%);
@@ -506,9 +524,9 @@ body {
 }
 
 
-/* ==============================
-   시작
-============================== */
+/* =========================
+   START
+========================= */
 
 #start {
 
@@ -521,6 +539,7 @@ body {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     flex-direction: column;
@@ -620,9 +639,9 @@ button:hover {
 }
 
 
-/* ==============================
-   모바일
-============================== */
+/* =========================
+   MOBILE
+========================= */
 
 @media(max-width:700px) {
 
@@ -641,17 +660,14 @@ button:hover {
     }
 
     .name {
-
         font-size: 9px;
     }
 
     #timer {
-
         font-size: 22px;
     }
 
     #start h1 {
-
         font-size: 35px;
     }
 
@@ -674,6 +690,7 @@ button:hover {
 }
 
 </style>
+
 </head>
 
 
@@ -684,9 +701,7 @@ button:hover {
 
     <div id="backLight"></div>
 
-
     <canvas id="canvas"></canvas>
-
 
     <div id="floor"></div>
 
@@ -701,7 +716,6 @@ button:hover {
             BLUE
         </div>
 
-
         <div class="hp">
 
             <div
@@ -711,11 +725,9 @@ button:hover {
 
         </div>
 
-
         <div id="timer">
             60
         </div>
-
 
         <div class="hp">
 
@@ -725,7 +737,6 @@ button:hover {
             </div>
 
         </div>
-
 
         <div class="name right">
             RED
@@ -856,6 +867,7 @@ button:hover {
 
 <script>
 
+
 /* =========================================================
    CANVAS
 ========================================================= */
@@ -873,10 +885,13 @@ const canvas =
 
 
 const ctx =
-    canvas.getContext("2d");
+    canvas.getContext(
+        "2d"
+    );
 
 
 let W = 1200;
+
 let H = 720;
 
 
@@ -886,8 +901,12 @@ function resize() {
         game.getBoundingClientRect();
 
 
-    W = rect.width;
-    H = rect.height;
+    W =
+        rect.width;
+
+
+    H =
+        rect.height;
 
 
     const dpr =
@@ -976,7 +995,7 @@ document.addEventListener(
 
 
 /* =========================================================
-   공격 데이터
+   ATTACK DATA
 ========================================================= */
 
 const ATTACKS = {
@@ -991,7 +1010,7 @@ const ATTACKS = {
 
         recovery: 13,
 
-        range: 110,
+        range: 125,
 
         damage: 6,
 
@@ -1017,7 +1036,7 @@ const ATTACKS = {
 
         recovery: 18,
 
-        range: 125,
+        range: 140,
 
         damage: 9,
 
@@ -1043,7 +1062,7 @@ const ATTACKS = {
 
         recovery: 21,
 
-        range: 115,
+        range: 130,
 
         damage: 8,
 
@@ -1069,7 +1088,7 @@ const ATTACKS = {
 
         recovery: 27,
 
-        range: 120,
+        range: 135,
 
         damage: 12,
 
@@ -1089,7 +1108,7 @@ const ATTACKS = {
 
 
 /* =========================================================
-   캐릭터
+   FIGHTER
 ========================================================= */
 
 function makeFighter(
@@ -1155,6 +1174,7 @@ function makeFighter(
 
 
 let player;
+
 let cpu;
 
 let running = false;
@@ -1284,21 +1304,25 @@ const skillUI = {
 
 
 /* =========================================================
-   게임 시작
+   START GAME
 ========================================================= */
 
 function startGame() {
 
+    /*
+       캐릭터 간 거리를 넓게 유지
+    */
+
     player =
         makeFighter(
-            W * .25,
+            W * .24,
             false
         );
 
 
     cpu =
         makeFighter(
-            W * .75,
+            W * .76,
             true
         );
 
@@ -1335,7 +1359,7 @@ startButton.addEventListener(
 
 
 /* =========================================================
-   기본 함수
+   UTILITY
 ========================================================= */
 
 function clamp(
@@ -1354,7 +1378,10 @@ function clamp(
 }
 
 
-function distance(a,b) {
+function distance(
+    a,
+    b
+) {
 
     return Math.abs(
         a.x - b.x
@@ -1385,7 +1412,7 @@ function faceOpponent(
 
 
 /* =========================================================
-   가드
+   CROUCH
 ========================================================= */
 
 function crouching(f) {
@@ -1396,6 +1423,10 @@ function crouching(f) {
 }
 
 
+/* =========================================================
+   GUARD
+========================================================= */
+
 function canGuard(
     f,
     opponent
@@ -1405,9 +1436,11 @@ function canGuard(
         return false;
     }
 
+
     if (f.attack) {
         return false;
     }
+
 
     if (f.airborne) {
         return false;
@@ -1424,7 +1457,7 @@ function canGuard(
         distance(
             f,
             opponent
-        ) < 180;
+        ) < 200;
 
 
     const moving =
@@ -1446,7 +1479,7 @@ function canGuard(
 
 
 /* =========================================================
-   공격 시작
+   START ATTACK
 ========================================================= */
 
 function startAttack(
@@ -1502,7 +1535,7 @@ function startAttack(
 
 
 /* =========================================================
-   공격 프레임
+   ATTACK FRAME
 ========================================================= */
 
 function attackActive(f) {
@@ -1552,7 +1585,7 @@ function attackFinished(f) {
 
 
 /* =========================================================
-   공격 범위
+   RANGE
 ========================================================= */
 
 function inRange(
@@ -1602,7 +1635,7 @@ function inRange(
         Math.abs(
             attacker.y -
             defender.y
-        ) > 95
+        ) > 110
     ) {
 
         return false;
@@ -1614,7 +1647,7 @@ function inRange(
 
 
 /* =========================================================
-   가드 판정
+   GUARD RESULT
 ========================================================= */
 
 function guardResult(
@@ -1661,7 +1694,7 @@ function guardResult(
 
 
 /* =========================================================
-   피격
+   HIT
 ========================================================= */
 
 function resolveHit(
@@ -1710,7 +1743,9 @@ function resolveHit(
         );
 
 
-    /* 하이 크러시 */
+    /*
+       HIGH CRUSH
+    */
 
     if (
         guard === "evade"
@@ -1721,13 +1756,16 @@ function resolveHit(
             "#65d7ff"
         );
 
+
         attacker.combo = 0;
 
         return;
     }
 
 
-    /* 가드 */
+    /*
+       GUARD
+    */
 
     if (
         guard === true
@@ -1775,7 +1813,9 @@ function resolveHit(
     }
 
 
-    /* 실제 피격 */
+    /*
+       NORMAL HIT
+    */
 
     let damage =
         a.damage;
@@ -1824,6 +1864,10 @@ function resolveHit(
     attacker.comboTimer =
         55;
 
+
+    /*
+       LAUNCHER
+    */
 
     if (
         a.launcher &&
@@ -1879,7 +1923,7 @@ function resolveHit(
 
 
 /* =========================================================
-   공격 업데이트
+   UPDATE ATTACK
 ========================================================= */
 
 function updateAttack(
@@ -1929,7 +1973,7 @@ function updateAttack(
 
 
 /* =========================================================
-   쿨타임
+   COOLDOWN
 ========================================================= */
 
 function updateCooldowns(f) {
@@ -1954,7 +1998,7 @@ function updateCooldowns(f) {
 
 
 /* =========================================================
-   플레이어
+   PLAYER
 ========================================================= */
 
 function updatePlayer() {
@@ -2087,7 +2131,7 @@ function updatePlayer() {
         keys["arrowleft"]
     ) {
 
-        player.x -= 4.5;
+        player.x -= 5;
 
         moved = true;
     }
@@ -2097,7 +2141,7 @@ function updatePlayer() {
         keys["arrowright"]
     ) {
 
-        player.x += 4.5;
+        player.x += 5;
 
         moved = true;
     }
@@ -2201,8 +2245,8 @@ function updatePlayer() {
     player.x =
         clamp(
             player.x,
-            60,
-            W - 60
+            75,
+            W - 75
         );
 }
 
@@ -2355,19 +2399,19 @@ function updateCPU() {
 
 
     if (
-        d > 135
+        d > 150
     ) {
 
         if (
             cpu.x > player.x
         ) {
 
-            cpu.x -= 2.3;
+            cpu.x -= 2.4;
         }
 
         else {
 
-            cpu.x += 2.3;
+            cpu.x += 2.4;
         }
 
 
@@ -2392,13 +2436,13 @@ function updateCPU() {
 
 
     /*
-       플레이어 공격을 보고
-       가끔 가드
+       플레이어가 공격하면
+       일정 확률로 가드
     */
 
     if (
         player.attack &&
-        Math.random() < .4
+        Math.random() < .42
     ) {
 
         cpu.aiGuard =
@@ -2425,7 +2469,9 @@ function updateCPU() {
             cpu.cooldowns[type] <= 0
         ) {
 
-            attacks.push(type);
+            attacks.push(
+                type
+            );
         }
     }
 
@@ -2433,10 +2479,6 @@ function updateCPU() {
     if (
         attacks.length > 0
     ) {
-
-        /*
-           일정 확률로 하단/중단/상단 선택
-        */
 
         const roll =
             Math.random();
@@ -2480,7 +2522,8 @@ function updateCPU() {
                 attacks[
                     Math.floor(
                         Math.random()
-                        * attacks.length
+                        *
+                        attacks.length
                     )
                 ];
         }
@@ -2502,7 +2545,7 @@ function updateCPU() {
 
 
 /* =========================================================
-   콤보
+   COMBO
 ========================================================= */
 
 function updateCombos() {
@@ -2574,7 +2617,7 @@ function showCombo(f) {
 
 
 /* =========================================================
-   텍스트
+   TEXT
 ========================================================= */
 
 function showHitText(
@@ -2615,7 +2658,7 @@ function showHitText(
 
 
 /* =========================================================
-   이펙트
+   PARTICLES
 ========================================================= */
 
 let particles = [];
@@ -2640,12 +2683,16 @@ function spawnImpact(
             y: y,
 
             vx:
-                (Math.random() - .5)
-                * 9,
+                (
+                    Math.random()
+                    - .5
+                ) * 9,
 
             vy:
-                (Math.random() - .5)
-                * 9,
+                (
+                    Math.random()
+                    - .5
+                ) * 9,
 
             life:
                 15 +
@@ -2667,11 +2714,14 @@ function updateParticles() {
         const p of particles
     ) {
 
-        p.x += p.vx;
+        p.x +=
+            p.vx;
 
-        p.y += p.vy;
+        p.y +=
+            p.vy;
 
-        p.vy += .25;
+        p.vy +=
+            .25;
 
         p.life--;
     }
@@ -2700,19 +2750,22 @@ function flashScreen() {
 
 
 /* =========================================================
-   타이머
+   TIMER
 ========================================================= */
 
 function updateTimer(dt) {
 
-    secondTimer += dt;
+    secondTimer +=
+        dt;
 
 
     if (
         secondTimer >= 1000
     ) {
 
-        secondTimer -= 1000;
+        secondTimer -=
+            1000;
+
 
         gameTime--;
 
@@ -2757,7 +2810,7 @@ function updateTimer(dt) {
 
 
 /* =========================================================
-   승리
+   WIN
 ========================================================= */
 
 function checkWinner() {
@@ -2817,7 +2870,7 @@ function gameOver(text) {
 
 
 /* =========================================================
-   졸라맨 그리기
+   STICKMAN
 ========================================================= */
 
 function drawStickman(
@@ -2827,11 +2880,20 @@ function drawStickman(
 ) {
 
     /*
-       철권 1 느낌을 위해
-       캐릭터 전체 크기를 작게 유지
+       =====================================
+       캐릭터 크기
+       =====================================
+
+       이전:
+       0.78
+
+       현재:
+       1.25
+
+       화면을 꽤 크게 차지하도록 변경
     */
 
-    const scale = 0.78;
+    const scale = 1.25;
 
 
     const baseY =
@@ -2866,7 +2928,7 @@ function drawStickman(
 
 
     ctx.fillStyle =
-        "rgba(0,0,0,.55)";
+        "rgba(0,0,0,.58)";
 
 
     ctx.beginPath();
@@ -2874,14 +2936,15 @@ function drawStickman(
     ctx.ellipse(
         0,
         7,
-        42,
-        12,
+        44,
+        13,
         0,
         0,
         Math.PI * 2
     );
 
     ctx.fill();
+
 
     ctx.restore();
 
@@ -2890,14 +2953,17 @@ function drawStickman(
        기본 포즈
     */
 
-    let frontArmX = 28;
+    let frontArmX = 30;
+
     let frontArmY = -72;
 
-    let backArmX = -27;
+    let backArmX = -30;
+
     let backArmY = -70;
 
-    let frontLegX = 16;
-    let backLegX = -16;
+    let frontLegX = 18;
+
+    let backLegX = -18;
 
     let bodyTilt = 0;
 
@@ -2919,11 +2985,13 @@ function drawStickman(
 
 
         frontLegX =
-            16 + w * 18;
+            18 +
+            w * 20;
 
 
         backLegX =
-            -16 - w * 18;
+            -18 -
+            w * 20;
     }
 
 
@@ -2935,11 +3003,11 @@ function drawStickman(
         f.state === "crouch"
     ) {
 
-        crouch = 19;
+        crouch = 20;
 
-        frontLegX = 20;
+        frontLegX = 23;
 
-        backLegX = -20;
+        backLegX = -23;
     }
 
 
@@ -2951,18 +3019,18 @@ function drawStickman(
         f.state === "guard"
     ) {
 
-        frontArmX = 22;
+        frontArmX = 23;
 
-        frontArmY = -88;
+        frontArmY = -91;
 
         backArmX = 4;
 
-        backArmY = -92;
+        backArmY = -94;
     }
 
 
     /*
-       상단 공격
+       상단
     */
 
     if (
@@ -2985,15 +3053,15 @@ function drawStickman(
 
         else {
 
-            frontArmX = 63;
+            frontArmX = 70;
 
-            frontArmY = -88;
+            frontArmY = -92;
         }
     }
 
 
     /*
-       중단 공격
+       중단
     */
 
     if (
@@ -3001,16 +3069,16 @@ function drawStickman(
         f.attack === "mid"
     ) {
 
-        frontArmX = 61;
+        frontArmX = 69;
 
-        frontArmY = -55;
+        frontArmY = -56;
 
-        bodyTilt = .08;
+        bodyTilt = .09;
     }
 
 
     /*
-       하단 공격
+       하단
     */
 
     if (
@@ -3018,11 +3086,11 @@ function drawStickman(
         f.attack === "low"
     ) {
 
-        crouch = 15;
+        crouch = 16;
 
-        frontLegX = 48;
+        frontLegX = 52;
 
-        backLegX = -18;
+        backLegX = -20;
     }
 
 
@@ -3035,9 +3103,9 @@ function drawStickman(
         f.attack === "launcher"
     ) {
 
-        frontArmX = 57;
+        frontArmX = 65;
 
-        frontArmY = -100;
+        frontArmY = -105;
 
         bodyTilt = -.12;
     }
@@ -3053,11 +3121,11 @@ function drawStickman(
 
         bodyTilt = -.28;
 
-        frontArmX = 42;
+        frontArmX = 43;
 
         frontArmY = -62;
 
-        backArmX = -35;
+        backArmX = -37;
 
         backArmY = -55;
     }
@@ -3069,28 +3137,28 @@ function drawStickman(
 
 
     /*
+       =================================
        다리
+       =================================
     */
 
     ctx.lineCap =
         "round";
 
-
     ctx.lineJoin =
         "round";
-
-
-    ctx.strokeStyle =
-        color;
-
-
-    ctx.lineWidth =
-        12;
 
 
     /*
        뒤쪽 다리
     */
+
+    ctx.strokeStyle =
+        darkColor;
+
+    ctx.lineWidth =
+        14;
+
 
     ctx.beginPath();
 
@@ -3111,6 +3179,10 @@ function drawStickman(
        앞쪽 다리
     */
 
+    ctx.strokeStyle =
+        color;
+
+
     ctx.beginPath();
 
     ctx.moveTo(
@@ -3127,15 +3199,16 @@ function drawStickman(
 
 
     /*
+       =================================
        몸통
+       =================================
     */
 
     ctx.strokeStyle =
         color;
 
-
     ctx.lineWidth =
-        16;
+        19;
 
 
     ctx.beginPath();
@@ -3154,10 +3227,9 @@ function drawStickman(
 
 
     /*
+       =================================
        머리
-
-       얼굴 없음.
-       단순한 원만 사용.
+       =================================
     */
 
     ctx.fillStyle =
@@ -3169,7 +3241,7 @@ function drawStickman(
     ctx.arc(
         0,
         -130 + crouch,
-        17,
+        20,
         0,
         Math.PI * 2
     );
@@ -3178,15 +3250,22 @@ function drawStickman(
 
 
     /*
+       얼굴은 그리지 않는다.
+       눈 / 코 / 입 없음.
+    */
+
+
+    /*
+       =================================
        뒤쪽 팔
+       =================================
     */
 
     ctx.strokeStyle =
         darkColor;
 
-
     ctx.lineWidth =
-        11;
+        13;
 
 
     ctx.beginPath();
@@ -3205,7 +3284,9 @@ function drawStickman(
 
 
     /*
+       =================================
        앞쪽 팔
+       =================================
     */
 
     ctx.strokeStyle =
@@ -3229,8 +3310,6 @@ function drawStickman(
 
     /*
        주먹
-
-       얼굴/눈/코/입 없음.
     */
 
     ctx.fillStyle =
@@ -3242,7 +3321,7 @@ function drawStickman(
     ctx.arc(
         frontArmX,
         frontArmY + crouch,
-        7,
+        8,
         0,
         Math.PI * 2
     );
@@ -3255,7 +3334,7 @@ function drawStickman(
 
 
 /* =========================================================
-   공격 이펙트
+   ATTACK EFFECT
 ========================================================= */
 
 function drawAttackEffect(f) {
@@ -3326,11 +3405,11 @@ function drawAttackEffect(f) {
 
 
     ctx.lineWidth =
-        5;
+        6;
 
 
     ctx.globalAlpha =
-        .7;
+        .72;
 
 
     ctx.beginPath();
@@ -3341,9 +3420,9 @@ function drawAttackEffect(f) {
     ) {
 
         ctx.arc(
-            25,
+            30,
             -45,
-            40,
+            45,
             -.2,
             1.1
         );
@@ -3352,9 +3431,9 @@ function drawAttackEffect(f) {
     else {
 
         ctx.arc(
-            45,
+            48,
             -75,
-            45,
+            50,
             -.9,
             .6
         );
@@ -3369,13 +3448,13 @@ function drawAttackEffect(f) {
 
 
 /* =========================================================
-   배경
+   BACKGROUND
 ========================================================= */
 
 function drawBackground() {
 
     /*
-       뒤쪽 기둥
+       배경 기둥
     */
 
     for (
@@ -3402,12 +3481,11 @@ function drawBackground() {
 
 
     /*
-       경기장 라인
+       바닥 라인
     */
 
     ctx.strokeStyle =
         "rgba(255,255,255,.035)";
-
 
     ctx.lineWidth = 1;
 
@@ -3436,7 +3514,7 @@ function drawBackground() {
 
 
 /* =========================================================
-   렌더
+   RENDER
 ========================================================= */
 
 function render() {
@@ -3485,6 +3563,10 @@ function render() {
     ctx.globalAlpha = 1;
 
 
+    /*
+       플레이어
+    */
+
     if (player) {
 
         drawStickman(
@@ -3499,6 +3581,10 @@ function render() {
         );
     }
 
+
+    /*
+       CPU
+    */
 
     if (cpu) {
 
@@ -3551,7 +3637,7 @@ function updateHUD() {
 
 
 /* =========================================================
-   기술 UI
+   SKILL UI
 ========================================================= */
 
 function updateSkillUI() {
@@ -3612,7 +3698,7 @@ function updateSkillUI() {
 
 
 /* =========================================================
-   메인 업데이트
+   UPDATE
 ========================================================= */
 
 function update(dt) {
@@ -3648,7 +3734,7 @@ function update(dt) {
 
 
 /* =========================================================
-   게임 루프
+   GAME LOOP
 ========================================================= */
 
 function loop(now) {
