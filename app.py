@@ -4,7 +4,7 @@ import streamlit.components.v1 as components
 st.set_page_config(
     page_title="IRON FIGHTERS",
     page_icon="🥊",
-    layout="wide",
+    layout="wide"
 )
 
 st.markdown("""
@@ -13,11 +13,9 @@ st.markdown("""
     padding: 0 !important;
     max-width: 1400px !important;
 }
-
 [data-testid="stHeader"] {
     display: none;
 }
-
 iframe {
     border: none !important;
 }
@@ -28,558 +26,303 @@ iframe {
 GAME = r"""
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
-
 <meta charset="UTF-8">
 
 <style>
-
 * {
     box-sizing: border-box;
 }
 
-html,
-body {
+html, body {
     margin: 0;
     padding: 0;
-
     width: 100%;
     height: 100%;
-
     overflow: hidden;
-
-    background: #08090d;
-
-    font-family:
-        Arial,
-        sans-serif;
+    background: #07090d;
+    font-family: Arial, sans-serif;
 }
 
-
 #game {
-
     position: relative;
-
     width: 100%;
     height: 720px;
-
     max-width: 1280px;
-
     margin: auto;
-
     overflow: hidden;
 
     background:
-
         radial-gradient(
             ellipse at 50% 25%,
-            rgba(100,120,170,.24),
-            transparent 45%
+            rgba(100,120,170,.25),
+            transparent 48%
         ),
-
         linear-gradient(
-            #111a2c 0%,
-            #253c60 48%,
-            #493528 49%,
-            #201b1a 52%,
-            #090909 100%
+            #101a2c 0%,
+            #233b5e 48%,
+            #49372a 49%,
+            #171515 53%,
+            #08090b 100%
         );
 
-    border:
-        2px solid #3c414b;
-
-    border-radius: 8px;
-
-    user-select: none;
+    border: 2px solid #3e434c;
 }
 
-
 #canvas {
-
     position: absolute;
-
     left: 0;
     top: 0;
-
     width: 100%;
     height: 100%;
-
     z-index: 10;
 }
 
-
-#backLight {
-
-    position: absolute;
-
-    width: 650px;
-    height: 650px;
-
-    left: 50%;
-    top: -280px;
-
-    transform:
-        translateX(-50%);
-
-    background:
-        radial-gradient(
-            ellipse,
-            rgba(255,255,255,.14),
-            transparent 68%
-        );
-
-    pointer-events: none;
-
-    z-index: 1;
-}
-
-
-#floorLine {
-
-    position: absolute;
-
-    left: 0;
-    right: 0;
-
-    bottom: 124px;
-
-    height: 4px;
-
-    background:
-        #c99a43;
-
-    box-shadow:
-        0 0 15px
-        rgba(255,190,60,.45);
-
-    z-index: 5;
-}
-
-
 #floor {
-
     position: absolute;
-
     left: 0;
     right: 0;
-
     bottom: 0;
-
-    height: 126px;
+    height: 125px;
+    z-index: 3;
 
     background:
-
         linear-gradient(
             rgba(255,255,255,.035) 1px,
             transparent 1px
         ),
-
         linear-gradient(
             90deg,
             rgba(255,255,255,.035) 1px,
             transparent 1px
         ),
-
         #111214;
 
-    background-size:
-        40px 40px;
-
-    z-index: 3;
+    background-size: 40px 40px;
 }
 
+#floorLine {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 123px;
+    height: 4px;
+    z-index: 5;
 
-/* =========================
-   HUD
-========================= */
+    background: #c99a43;
+    box-shadow: 0 0 15px rgba(255,190,60,.45);
+}
+
+/* HUD */
 
 #hud {
-
     position: absolute;
-
     z-index: 50;
-
     left: 20px;
     right: 20px;
-
     top: 18px;
 
     display: grid;
-
     grid-template-columns:
-        90px
+        80px
         1fr
         65px
         1fr
-        90px;
+        80px;
 
     gap: 10px;
-
     align-items: center;
 }
 
-
 .name {
-
-    color: #fff;
-
+    color: white;
     font-weight: 900;
-
-    font-size: 15px;
-
-    letter-spacing: 1px;
+    font-size: 14px;
 }
 
-
 .name.right {
-
     text-align: right;
 }
 
-
 .hp {
-
     height: 27px;
-
-    background:
-        #080808;
-
-    border:
-        2px solid #d7d7d7;
-
+    background: #070707;
+    border: 2px solid #ddd;
     overflow: hidden;
 }
 
-
 .hpBar {
-
     height: 100%;
-
     width: 100%;
-
-    transition:
-        width .12s linear;
+    transition: width .1s linear;
 }
-
 
 #playerHP {
-
-    background:
-        linear-gradient(
-            #5eff94,
-            #139343
-        );
+    background: linear-gradient(#5fff96,#139343);
 }
 
-
 #cpuHP {
-
-    background:
-        linear-gradient(
-            #ff6262,
-            #b50f24
-        );
-
+    background: linear-gradient(#ff6262,#b50f24);
     float: right;
 }
 
-
 #timer {
-
     text-align: center;
-
-    color: #fff;
-
+    color: white;
     font-size: 30px;
-
     font-weight: 1000;
 }
 
-
-/* =========================
-   COMBO
-========================= */
+/* COMBO */
 
 #combo {
-
     position: absolute;
-
     z-index: 80;
-
     left: 50%;
-    top: 115px;
-
-    transform:
-        translateX(-50%)
-        scale(.8);
-
+    top: 110px;
+    transform: translateX(-50%) scale(.75);
     opacity: 0;
 
-    color: #ffd94d;
-
-    font-size: 40px;
-
+    color: #ffd84d;
+    font-size: 38px;
     font-weight: 1000;
 
     text-shadow:
-        0 3px 0 #684b00,
-        0 6px 18px #000;
+        0 4px 0 #674a00,
+        0 7px 20px #000;
 
-    transition:
-        .12s;
+    transition: .12s;
 }
-
 
 #combo.show {
-
     opacity: 1;
-
-    transform:
-        translateX(-50%)
-        scale(1);
+    transform: translateX(-50%) scale(1);
 }
 
-
 #hitText {
-
     position: absolute;
-
     z-index: 80;
-
     left: 50%;
-    top: 168px;
+    top: 165px;
+    transform: translateX(-50%);
 
-    transform:
-        translateX(-50%);
-
-    font-size: 20px;
-
+    font-size: 19px;
     font-weight: 1000;
 
     opacity: 0;
 }
 
-
 #hitText.show {
-
     opacity: 1;
 }
 
-
-/* =========================
-   KO
-========================= */
+/* MESSAGE */
 
 #message {
-
     position: absolute;
-
-    z-index: 120;
-
+    z-index: 150;
     left: 50%;
-    top: 42%;
+    top: 43%;
 
-    transform:
-        translate(-50%,-50%);
+    transform: translate(-50%,-50%);
 
-    color: #fff;
-
-    font-size: 65px;
-
+    color: white;
+    font-size: 64px;
     font-weight: 1000;
 
     text-shadow:
         0 5px 25px #000;
 
     display: none;
-
     white-space: nowrap;
 }
 
+/* CONTROLS */
 
-/* =========================
-   SKILLS
-========================= */
-
-#skills {
-
+#controls {
     position: absolute;
-
-    z-index: 70;
-
-    left: 50%;
-    bottom: 16px;
-
-    transform:
-        translateX(-50%);
-
-    display: flex;
-
-    gap: 8px;
-}
-
-
-.skill {
-
-    position: relative;
-
-    width: 68px;
-    height: 43px;
-
-    overflow: hidden;
-
-    background:
-        #15171b;
-
-    border:
-        2px solid #777;
-
-    border-radius: 5px;
-
-    text-align: center;
-}
-
-
-.skill.ready {
-
-    border-color:
-        #54e989;
-
-    box-shadow:
-        0 0 10px
-        rgba(60,255,140,.25);
-}
-
-
-.skill.cooling {
-
-    border-color:
-        #e94a4a;
-}
-
-
-.key {
-
-    position: relative;
-
-    z-index: 4;
-
-    line-height: 39px;
-
-    color: white;
-
-    font-weight: 1000;
-
-    font-size: 16px;
-}
-
-
-.cooldown {
-
-    position: absolute;
-
-    z-index: 2;
-
-    left: 0;
-    bottom: 0;
-
-    width: 100%;
-    height: 0%;
-
-    background:
-        rgba(220,30,40,.75);
-}
-
-
-/* =========================
-   HINT
-========================= */
-
-#hint {
-
-    position: absolute;
-
     z-index: 60;
 
     left: 50%;
-    bottom: 69px;
+    bottom: 17px;
 
-    transform:
-        translateX(-50%);
+    transform: translateX(-50%);
 
-    color: #bbb;
-
-    background:
-        rgba(0,0,0,.62);
-
-    border-radius: 15px;
-
-    padding:
-        7px 17px;
-
-    font-size: 12px;
-
-    white-space: nowrap;
+    display: flex;
+    gap: 7px;
 }
 
+.control {
+    width: 58px;
+    height: 45px;
 
-/* =========================
-   START
-========================= */
+    background: #14161a;
+
+    border:
+        2px solid #666;
+
+    border-radius: 5px;
+
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-direction: column;
+
+    font-weight: 900;
+}
+
+.control .key {
+    font-size: 15px;
+}
+
+.control .label {
+    font-size: 8px;
+    color: #aaa;
+    margin-top: 2px;
+}
+
+/* START */
 
 #start {
-
     position: absolute;
-
     z-index: 200;
-
     inset: 0;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     flex-direction: column;
 
-    background:
-        rgba(3,4,7,.82);
+    background: rgba(3,4,7,.84);
 }
 
-
 #start h1 {
-
     margin: 0;
 
-    font-size: 55px;
+    color: white;
+
+    font-size: 54px;
 
     font-weight: 1000;
 
     letter-spacing: 4px;
-
-    color: #fff;
 }
-
 
 #start p {
-
-    margin:
-        8px 0 28px;
-
     color: #999;
+    margin: 8px 0 25px;
 }
 
-
 button {
-
     border: 0;
-
     border-radius: 5px;
 
-    padding:
-        13px 40px;
+    padding: 13px 40px;
 
     background:
         linear-gradient(
@@ -587,7 +330,7 @@ button {
             #941521
         );
 
-    color: #fff;
+    color: white;
 
     font-size: 19px;
 
@@ -596,52 +339,54 @@ button {
     cursor: pointer;
 }
 
-
 button:hover {
-
-    filter:
-        brightness(1.18);
+    filter: brightness(1.18);
 }
 
-
-#flash {
-
+#hint {
     position: absolute;
 
-    z-index: 100;
+    z-index: 70;
+
+    left: 50%;
+    bottom: 68px;
+
+    transform: translateX(-50%);
+
+    color: #bbb;
+
+    background: rgba(0,0,0,.62);
+
+    padding: 7px 15px;
+
+    border-radius: 14px;
+
+    font-size: 11px;
+
+    white-space: nowrap;
+}
+
+#flash {
+    position: absolute;
+    z-index: 120;
 
     inset: 0;
 
-    background: #fff;
+    background: white;
 
     pointer-events: none;
 
     opacity: 0;
 }
 
-
 #flash.active {
-
-    animation:
-        flash .1s;
+    animation: flash .08s;
 }
-
 
 @keyframes flash {
-
-    from {
-        opacity: .45;
-    }
-
-    to {
-        opacity: 0;
-    }
+    from { opacity: .4; }
+    to { opacity: 0; }
 }
-
-
-/* =========================
-   MOBILE
-========================= */
 
 @media(max-width:700px) {
 
@@ -649,66 +394,41 @@ button:hover {
         height: 650px;
     }
 
-    #hud {
-
-        grid-template-columns:
-            50px
-            1fr
-            45px
-            1fr
-            50px;
+    #controls {
+        gap: 3px;
     }
 
-    .name {
-        font-size: 9px;
+    .control {
+        width: 45px;
+        height: 40px;
     }
 
-    #timer {
-        font-size: 22px;
-    }
-
-    #start h1 {
-        font-size: 35px;
+    .control .label {
+        font-size: 7px;
     }
 
     #hint {
-
-        width: 95%;
-
-        white-space: normal;
-
+        width: 96%;
         text-align: center;
-
-        font-size: 9px;
+        white-space: normal;
     }
 
-    .skill {
-
-        width: 55px;
-        height: 38px;
+    #start h1 {
+        font-size: 32px;
     }
 }
-
 </style>
-
 </head>
 
 
 <body>
 
-
 <div id="game">
-
-    <div id="backLight"></div>
 
     <canvas id="canvas"></canvas>
 
     <div id="floor"></div>
-
     <div id="floorLine"></div>
-
-
-    <!-- HUD -->
 
     <div id="hud">
 
@@ -717,12 +437,7 @@ button:hover {
         </div>
 
         <div class="hp">
-
-            <div
-                id="playerHP"
-                class="hpBar">
-            </div>
-
+            <div id="playerHP" class="hpBar"></div>
         </div>
 
         <div id="timer">
@@ -730,12 +445,7 @@ button:hover {
         </div>
 
         <div class="hp">
-
-            <div
-                id="cpuHP"
-                class="hpBar">
-            </div>
-
+            <div id="cpuHP" class="hpBar"></div>
         </div>
 
         <div class="name right">
@@ -749,102 +459,64 @@ button:hover {
         3 HIT COMBO
     </div>
 
-
     <div id="hitText">
         MIDDLE
     </div>
 
-
     <div id="flash"></div>
-
 
     <div id="message"></div>
 
 
-    <!-- 기술 -->
+    <div id="controls">
 
-    <div id="skills">
-
-        <div
-            id="highSkill"
-            class="skill ready">
-
-            <div class="key">
-                A
-            </div>
-
-            <div
-                id="highCooldown"
-                class="cooldown">
-            </div>
-
+        <div class="control">
+            <div class="key">← →</div>
+            <div class="label">MOVE</div>
         </div>
 
-
-        <div
-            id="midSkill"
-            class="skill ready">
-
-            <div class="key">
-                S
-            </div>
-
-            <div
-                id="midCooldown"
-                class="cooldown">
-            </div>
-
+        <div class="control">
+            <div class="key">→→</div>
+            <div class="label">DASH</div>
         </div>
 
-
-        <div
-            id="lowSkill"
-            class="skill ready">
-
-            <div class="key">
-                D
-            </div>
-
-            <div
-                id="lowCooldown"
-                class="cooldown">
-            </div>
-
+        <div class="control">
+            <div class="key">←←</div>
+            <div class="label">BACK</div>
         </div>
 
+        <div class="control">
+            <div class="key">J</div>
+            <div class="label">LEFT</div>
+        </div>
 
-        <div
-            id="launcherSkill"
-            class="skill ready">
+        <div class="control">
+            <div class="key">K</div>
+            <div class="label">RIGHT</div>
+        </div>
 
-            <div class="key">
-                F
-            </div>
+        <div class="control">
+            <div class="key">U</div>
+            <div class="label">UPPER</div>
+        </div>
 
-            <div
-                id="launcherCooldown"
-                class="cooldown">
-            </div>
+        <div class="control">
+            <div class="key">I</div>
+            <div class="label">KICK</div>
+        </div>
 
+        <div class="control">
+            <div class="key">O</div>
+            <div class="label">LOW</div>
         </div>
 
     </div>
 
 
     <div id="hint">
-
-        ← → 이동　
-        ↓ 앉기　
-        A 상단　
-        S 중단　
-        D 하단　
-        F 런처　
-        · 가만히 있으면 가드
-
+        ←→ 이동 · →→ 대시 · ←← 백대시 · J 왼손 · K 오른손 · U 어퍼 · I 앞발차기 · O 하단발차기 · SPACE 가드
     </div>
 
-
-    <!-- 시작 -->
 
     <div id="start">
 
@@ -853,7 +525,7 @@ button:hover {
         </h1>
 
         <p>
-            SIMPLE FIGHTING GAME
+            ORIGINAL STICKMAN FIGHTING GAME
         </p>
 
         <button id="startButton">
@@ -867,31 +539,20 @@ button:hover {
 
 <script>
 
-
 /* =========================================================
    CANVAS
 ========================================================= */
 
 const game =
-    document.getElementById(
-        "game"
-    );
-
+    document.getElementById("game");
 
 const canvas =
-    document.getElementById(
-        "canvas"
-    );
-
+    document.getElementById("canvas");
 
 const ctx =
-    canvas.getContext(
-        "2d"
-    );
-
+    canvas.getContext("2d");
 
 let W = 1200;
-
 let H = 720;
 
 
@@ -900,34 +561,23 @@ function resize() {
     const rect =
         game.getBoundingClientRect();
 
-
-    W =
-        rect.width;
-
-
-    H =
-        rect.height;
-
+    W = rect.width;
+    H = rect.height;
 
     const dpr =
         window.devicePixelRatio || 1;
 
-
     canvas.width =
         W * dpr;
-
 
     canvas.height =
         H * dpr;
 
-
     canvas.style.width =
         W + "px";
 
-
     canvas.style.height =
         H + "px";
-
 
     ctx.setTransform(
         dpr,
@@ -945,7 +595,6 @@ window.addEventListener(
     resize
 );
 
-
 resize();
 
 
@@ -955,6 +604,12 @@ resize();
 
 const keys = {};
 
+let lastLeft = 0;
+let lastRight = 0;
+
+let dashBuffer = 0;
+let backBuffer = 0;
+
 
 document.addEventListener(
     "keydown",
@@ -963,9 +618,41 @@ document.addEventListener(
         const k =
             e.key.toLowerCase();
 
+        if (!keys[k]) {
+
+            if (k === "arrowright") {
+
+                const now =
+                    performance.now();
+
+                if (
+                    now - lastRight < 280
+                ) {
+
+                    dashBuffer = 18;
+                }
+
+                lastRight = now;
+            }
+
+
+            if (k === "arrowleft") {
+
+                const now =
+                    performance.now();
+
+                if (
+                    now - lastLeft < 280
+                ) {
+
+                    backBuffer = 18;
+                }
+
+                lastLeft = now;
+            }
+        }
 
         keys[k] = true;
-
 
         if (
             [
@@ -973,7 +660,12 @@ document.addEventListener(
                 "arrowright",
                 "arrowup",
                 "arrowdown",
-                " "
+                " ",
+                "j",
+                "k",
+                "u",
+                "i",
+                "o"
             ].includes(k)
         ) {
 
@@ -995,114 +687,178 @@ document.addEventListener(
 
 
 /* =========================================================
-   ATTACK DATA
+   ATTACKS
 ========================================================= */
 
 const ATTACKS = {
 
-    high: {
+    leftPunch: {
+
+        name: "LEFT PUNCH",
 
         level: "high",
 
-        startup: 6,
+        startup: 5,
 
         active: 4,
 
-        recovery: 13,
+        recovery: 12,
+
+        range: 118,
+
+        damage: 5,
+
+        hitstun: 16,
+
+        guardstun: 7,
+
+        knockback: 3,
+
+        cooldown: 8,
+
+        animation: "leftPunch"
+    },
+
+
+    rightPunch: {
+
+        name: "RIGHT PUNCH",
+
+        level: "high",
+
+        startup: 7,
+
+        active: 4,
+
+        recovery: 14,
 
         range: 125,
 
-        damage: 6,
+        damage: 7,
 
-        hitstun: 16,
+        hitstun: 18,
 
         guardstun: 8,
 
         knockback: 4,
 
-        cooldown: 12,
+        cooldown: 10,
 
-        comboScale: .94
+        animation: "rightPunch"
     },
 
 
-    mid: {
+    uppercut: {
+
+        name: "UPPERCUT",
+
+        level: "mid",
+
+        startup: 12,
+
+        active: 6,
+
+        recovery: 22,
+
+        range: 128,
+
+        damage: 10,
+
+        hitstun: 38,
+
+        guardstun: 12,
+
+        knockback: 5,
+
+        cooldown: 28,
+
+        launcher: true,
+
+        animation: "uppercut"
+    },
+
+
+    frontKick: {
+
+        name: "FRONT KICK",
 
         level: "mid",
 
         startup: 10,
 
-        active: 5,
+        active: 6,
 
         recovery: 18,
 
-        range: 140,
+        range: 145,
 
         damage: 9,
 
         hitstun: 22,
 
-        guardstun: 11,
+        guardstun: 10,
 
-        knockback: 7,
+        knockback: 6,
 
         cooldown: 18,
 
-        comboScale: .93
+        animation: "frontKick"
     },
 
 
-    low: {
+    lowKick: {
+
+        name: "LOW KICK",
 
         level: "low",
 
-        startup: 13,
+        startup: 11,
 
         active: 6,
 
-        recovery: 21,
+        recovery: 20,
 
-        range: 130,
+        range: 132,
 
-        damage: 8,
+        damage: 7,
 
-        hitstun: 20,
+        hitstun: 19,
 
-        guardstun: 9,
+        guardstun: 8,
 
-        knockback: 5,
+        knockback: 4,
 
-        cooldown: 22,
+        cooldown: 20,
 
-        comboScale: .92
+        animation: "lowKick"
     },
 
 
-    launcher: {
+    heavyKick: {
+
+        name: "HEAVY KICK",
 
         level: "mid",
 
-        startup: 17,
+        startup: 16,
 
         active: 7,
 
         recovery: 27,
 
-        range: 135,
+        range: 152,
 
-        damage: 12,
+        damage: 13,
 
-        hitstun: 38,
+        hitstun: 28,
 
         guardstun: 13,
 
-        knockback: 7,
+        knockback: 9,
 
-        cooldown: 45,
+        cooldown: 32,
 
-        comboScale: .88,
-
-        launcher: true
+        animation: "heavyKick"
     }
 };
 
@@ -1145,8 +901,6 @@ function makeFighter(
 
         blockstun: 0,
 
-        knockdown: 0,
-
         airborne: false,
 
         combo: 0,
@@ -1155,26 +909,20 @@ function makeFighter(
 
         animationTime: 0,
 
-        aiGuard: 0,
+        dash: 0,
+
+        backdash: 0,
+
+        dashCooldown: 0,
 
         aiAttackCooldown: 0,
 
-        cooldowns: {
-
-            high: 0,
-
-            mid: 0,
-
-            low: 0,
-
-            launcher: 0
-        }
+        aiGuard: 0
     };
 }
 
 
 let player;
-
 let cpu;
 
 let running = false;
@@ -1195,48 +943,40 @@ const playerHP =
         "playerHP"
     );
 
-
 const cpuHP =
     document.getElementById(
         "cpuHP"
     );
-
 
 const timerEl =
     document.getElementById(
         "timer"
     );
 
-
 const comboEl =
     document.getElementById(
         "combo"
     );
-
 
 const hitTextEl =
     document.getElementById(
         "hitText"
     );
 
-
 const messageEl =
     document.getElementById(
         "message"
     );
-
 
 const startEl =
     document.getElementById(
         "start"
     );
 
-
 const startButton =
     document.getElementById(
         "startButton"
     );
-
 
 const flashEl =
     document.getElementById(
@@ -1244,74 +984,11 @@ const flashEl =
     );
 
 
-const skillUI = {
-
-    high: {
-
-        box:
-            document.getElementById(
-                "highSkill"
-            ),
-
-        fill:
-            document.getElementById(
-                "highCooldown"
-            )
-    },
-
-
-    mid: {
-
-        box:
-            document.getElementById(
-                "midSkill"
-            ),
-
-        fill:
-            document.getElementById(
-                "midCooldown"
-            )
-    },
-
-
-    low: {
-
-        box:
-            document.getElementById(
-                "lowSkill"
-            ),
-
-        fill:
-            document.getElementById(
-                "lowCooldown"
-            )
-    },
-
-
-    launcher: {
-
-        box:
-            document.getElementById(
-                "launcherSkill"
-            ),
-
-        fill:
-            document.getElementById(
-                "launcherCooldown"
-            )
-    }
-};
-
-
 /* =========================================================
-   START GAME
+   START
 ========================================================= */
 
 function startGame() {
-
-    /*
-       캐릭터 간 거리를 넓게 유지
-    */
 
     player =
         makeFighter(
@@ -1319,32 +996,29 @@ function startGame() {
             false
         );
 
-
     cpu =
         makeFighter(
             W * .76,
             true
         );
 
-
     gameTime = 60;
 
     secondTimer = 0;
 
-    running = true;
+    dashBuffer = 0;
+    backBuffer = 0;
 
+    running = true;
 
     messageEl.style.display =
         "none";
 
-
     startEl.style.display =
         "none";
 
-
     lastTime =
         performance.now();
-
 
     requestAnimationFrame(
         loop
@@ -1359,11 +1033,11 @@ startButton.addEventListener(
 
 
 /* =========================================================
-   UTILITY
+   HELPERS
 ========================================================= */
 
 function clamp(
-    value,
+    v,
     min,
     max
 ) {
@@ -1372,16 +1046,13 @@ function clamp(
         min,
         Math.min(
             max,
-            value
+            v
         )
     );
 }
 
 
-function distance(
-    a,
-    b
-) {
+function distance(a,b) {
 
     return Math.abs(
         a.x - b.x
@@ -1394,7 +1065,9 @@ function busy(f) {
     return (
         f.hitstun > 0 ||
         f.blockstun > 0 ||
-        f.knockdown > 0
+        f.attack ||
+        f.dash > 0 ||
+        f.backdash > 0
     );
 }
 
@@ -1412,74 +1085,7 @@ function faceOpponent(
 
 
 /* =========================================================
-   CROUCH
-========================================================= */
-
-function crouching(f) {
-
-    return (
-        f.state === "crouch"
-    );
-}
-
-
-/* =========================================================
-   GUARD
-========================================================= */
-
-function canGuard(
-    f,
-    opponent
-) {
-
-    if (busy(f)) {
-        return false;
-    }
-
-
-    if (f.attack) {
-        return false;
-    }
-
-
-    if (f.airborne) {
-        return false;
-    }
-
-
-    if (f.cpu) {
-
-        return f.aiGuard > 0;
-    }
-
-
-    const near =
-        distance(
-            f,
-            opponent
-        ) < 200;
-
-
-    const moving =
-        keys["arrowleft"] ||
-        keys["arrowright"] ||
-        keys["arrowdown"] ||
-        keys["arrowup"] ||
-        keys["a"] ||
-        keys["s"] ||
-        keys["d"] ||
-        keys["f"];
-
-
-    return (
-        near &&
-        !moving
-    );
-}
-
-
-/* =========================================================
-   START ATTACK
+   ATTACK
 ========================================================= */
 
 function startAttack(
@@ -1487,93 +1093,54 @@ function startAttack(
     type
 ) {
 
-    if (!running) {
-        return false;
-    }
-
-
-    if (busy(f)) {
-        return false;
-    }
-
-
-    if (f.attack) {
-        return false;
-    }
-
+    if (!running) return false;
 
     if (
-        f.cooldowns[type] > 0
+        f.hitstun > 0 ||
+        f.blockstun > 0 ||
+        f.attack ||
+        f.dash > 0 ||
+        f.backdash > 0
     ) {
-
-        if (!f.cpu) {
-
-            showHitText(
-                "COOLDOWN",
-                "#ff5555"
-            );
-        }
 
         return false;
     }
 
+    f.attack = type;
 
-    f.attack =
-        type;
+    f.attackFrame = 0;
 
-
-    f.attackFrame =
-        0;
-
-
-    f.attackConnected =
-        false;
-
+    f.attackConnected = false;
 
     return true;
 }
 
 
-/* =========================================================
-   ATTACK FRAME
-========================================================= */
-
 function attackActive(f) {
 
-    if (!f.attack) {
-        return false;
-    }
-
+    if (!f.attack) return false;
 
     const a =
         ATTACKS[
             f.attack
         ];
 
-
     return (
-        f.attackFrame >=
-        a.startup &&
-
+        f.attackFrame >= a.startup &&
         f.attackFrame <
-        a.startup +
-        a.active
+        a.startup + a.active
     );
 }
 
 
 function attackFinished(f) {
 
-    if (!f.attack) {
-        return false;
-    }
-
+    if (!f.attack) return false;
 
     const a =
         ATTACKS[
             f.attack
         ];
-
 
     return (
         f.attackFrame >=
@@ -1585,70 +1152,33 @@ function attackFinished(f) {
 
 
 /* =========================================================
-   RANGE
+   GUARD
 ========================================================= */
 
-function inRange(
-    attacker,
-    defender
-) {
+function isGuarding(f) {
 
-    const a =
-        ATTACKS[
-            attacker.attack
-        ];
-
-
-    if (!a) {
+    if (f.hitstun > 0) {
         return false;
     }
 
-
-    if (
-        distance(
-            attacker,
-            defender
-        ) > a.range
-    ) {
-
+    if (f.attack) {
         return false;
     }
 
-
-    const dir =
-        Math.sign(
-            defender.x -
-            attacker.x
-        );
-
-
-    if (
-        dir !==
-        attacker.facing
-    ) {
-
+    if (f.airborne) {
         return false;
     }
 
+    if (f.cpu) {
 
-    if (
-        Math.abs(
-            attacker.y -
-            defender.y
-        ) > 110
-    ) {
-
-        return false;
+        return f.aiGuard > 0;
     }
 
-
-    return true;
+    return (
+        keys[" "] === true
+    );
 }
 
-
-/* =========================================================
-   GUARD RESULT
-========================================================= */
 
 function guardResult(
     defender,
@@ -1660,14 +1190,16 @@ function guardResult(
     ) {
 
         if (
-            crouching(defender)
+            keys["arrowdown"] &&
+            !defender.cpu
         ) {
 
             return "evade";
         }
 
-
-        return true;
+        return isGuarding(
+            defender
+        );
     }
 
 
@@ -1675,7 +1207,9 @@ function guardResult(
         attack.level === "mid"
     ) {
 
-        return true;
+        return isGuarding(
+            defender
+        );
     }
 
 
@@ -1683,8 +1217,11 @@ function guardResult(
         attack.level === "low"
     ) {
 
-        return crouching(
-            defender
+        return (
+            isGuarding(
+                defender
+            ) &&
+            keys["arrowdown"]
         );
     }
 
@@ -1697,7 +1234,7 @@ function guardResult(
    HIT
 ========================================================= */
 
-function resolveHit(
+function inRange(
     attacker,
     defender
 ) {
@@ -1707,11 +1244,34 @@ function resolveHit(
             attacker.attack
         ];
 
+    if (!a) return false;
 
-    if (!a) {
-        return;
+    if (
+        distance(
+            attacker,
+            defender
+        ) > a.range
+    ) {
+
+        return false;
     }
 
+    const dir =
+        Math.sign(
+            defender.x -
+            attacker.x
+        );
+
+    return (
+        dir === attacker.facing
+    );
+}
+
+
+function resolveHit(
+    attacker,
+    defender
+) {
 
     if (
         attacker.attackConnected
@@ -1719,7 +1279,6 @@ function resolveHit(
 
         return;
     }
-
 
     if (
         !inRange(
@@ -1731,10 +1290,13 @@ function resolveHit(
         return;
     }
 
-
     attacker.attackConnected =
         true;
 
+    const a =
+        ATTACKS[
+            attacker.attack
+        ];
 
     const guard =
         guardResult(
@@ -1743,83 +1305,49 @@ function resolveHit(
         );
 
 
-    /*
-       HIGH CRUSH
-    */
-
     if (
         guard === "evade"
     ) {
 
         showHitText(
             "HIGH CRUSH",
-            "#65d7ff"
+            "#61dfff"
         );
-
-
-        attacker.combo = 0;
 
         return;
     }
 
 
-    /*
-       GUARD
-    */
-
-    if (
-        guard === true
-    ) {
-
-        defender.hp -=
-            Math.max(
-                1,
-                Math.floor(
-                    a.damage * .18
-                )
-            );
-
+    if (guard) {
 
         defender.blockstun =
             a.guardstun;
 
-
-        defender.vx =
-            attacker.facing * 2;
-
-
         defender.state =
             "guard";
 
-
-        attacker.combo = 0;
-
-
         showHitText(
-            a.level.toUpperCase()
-            + " GUARD",
-            "#61d9ff"
+            "GUARD",
+            "#61dfff"
         );
-
 
         spawnImpact(
             defender.x,
-            H - 230,
-            "#6adfff"
+            H - 245,
+            "#62dfff"
         );
-
 
         return;
     }
 
 
-    /*
-       NORMAL HIT
-    */
-
     let damage =
         a.damage;
 
+
+    /*
+       공중 콤보 보정
+    */
 
     if (
         defender.airborne
@@ -1827,7 +1355,7 @@ function resolveHit(
 
         damage *=
             Math.pow(
-                a.comboScale,
+                .92,
                 attacker.combo
             );
     }
@@ -1845,15 +1373,12 @@ function resolveHit(
     defender.hp -=
         damage;
 
-
     defender.hitstun =
         a.hitstun;
-
 
     defender.vx =
         attacker.facing *
         a.knockback;
-
 
     defender.state =
         "hit";
@@ -1866,7 +1391,7 @@ function resolveHit(
 
 
     /*
-       LAUNCHER
+       런처
     */
 
     if (
@@ -1877,44 +1402,37 @@ function resolveHit(
         defender.airborne =
             true;
 
-
         defender.vy =
             12;
-
 
         defender.y =
             1;
 
-
         defender.hitstun =
-            40;
-
+            42;
 
         showHitText(
-            "LAUNCH",
-            "#ffe14d"
+            "LAUNCH!",
+            "#ffe34f"
         );
-
     }
 
     else {
 
         showHitText(
-            a.level.toUpperCase(),
-            "#ffe14d"
+            a.name,
+            "#ffe34f"
         );
     }
 
 
     spawnImpact(
         defender.x,
-        H - 220 - defender.y,
-        "#ffe14d"
+        H - 235 - defender.y,
+        "#ffe34f"
     );
 
-
     flashScreen();
-
 
     showCombo(
         attacker
@@ -1931,10 +1449,7 @@ function updateAttack(
     opponent
 ) {
 
-    if (!f.attack) {
-        return;
-    }
-
+    if (!f.attack) return;
 
     f.attackFrame++;
 
@@ -1954,14 +1469,6 @@ function updateAttack(
         attackFinished(f)
     ) {
 
-        const type =
-            f.attack;
-
-
-        f.cooldowns[type] =
-            ATTACKS[type].cooldown;
-
-
         f.attack = null;
 
         f.attackFrame = 0;
@@ -1973,32 +1480,47 @@ function updateAttack(
 
 
 /* =========================================================
-   COOLDOWN
+   DASH
 ========================================================= */
 
-function updateCooldowns(f) {
+function startDash(f) {
 
-    if (!f) {
+    if (
+        f.hitstun > 0 ||
+        f.blockstun > 0 ||
+        f.attack ||
+        f.airborne
+    ) {
+
         return;
     }
 
+    f.dash = 10;
 
-    for (
-        const type in f.cooldowns
+    f.state = "dash";
+}
+
+
+function startBackdash(f) {
+
+    if (
+        f.hitstun > 0 ||
+        f.blockstun > 0 ||
+        f.attack ||
+        f.airborne
     ) {
 
-        if (
-            f.cooldowns[type] > 0
-        ) {
-
-            f.cooldowns[type]--;
-        }
+        return;
     }
+
+    f.backdash = 13;
+
+    f.state = "backdash";
 }
 
 
 /* =========================================================
-   PLAYER
+   PLAYER UPDATE
 ========================================================= */
 
 function updatePlayer() {
@@ -2008,6 +1530,10 @@ function updatePlayer() {
         cpu
     );
 
+
+    /*
+       피격
+    */
 
     if (
         player.hitstun > 0
@@ -2019,9 +1545,6 @@ function updatePlayer() {
             player.vx;
 
         player.vx *= .88;
-
-        player.state =
-            "hit";
 
 
         if (
@@ -2047,10 +1570,13 @@ function updatePlayer() {
             }
         }
 
-
         return;
     }
 
+
+    /*
+       가드 경직
+    */
 
     if (
         player.blockstun > 0
@@ -2058,17 +1584,16 @@ function updatePlayer() {
 
         player.blockstun--;
 
-        player.x +=
-            player.vx;
-
-        player.vx *= .86;
-
         player.state =
             "guard";
 
         return;
     }
 
+
+    /*
+       공중
+    */
 
     if (
         player.airborne
@@ -2078,6 +1603,17 @@ function updatePlayer() {
 
         player.y +=
             player.vy;
+
+
+        if (
+            player.attack
+        ) {
+
+            updateAttack(
+                player,
+                cpu
+            );
+        }
 
 
         if (
@@ -2092,21 +1628,13 @@ function updatePlayer() {
                 false;
         }
 
-
-        if (
-            player.attack
-        ) {
-
-            updateAttack(
-                player,
-                cpu
-            );
-        }
-
-
         return;
     }
 
+
+    /*
+       공격 중
+    */
 
     if (
         player.attack
@@ -2123,6 +1651,175 @@ function updatePlayer() {
         return;
     }
 
+
+    /*
+       대시
+    */
+
+    if (
+        dashBuffer > 0
+    ) {
+
+        startDash(
+            player
+        );
+
+        dashBuffer = 0;
+    }
+
+
+    if (
+        backBuffer > 0
+    ) {
+
+        startBackdash(
+            player
+        );
+
+        backBuffer = 0;
+    }
+
+
+    if (
+        player.dash > 0
+    ) {
+
+        player.dash--;
+
+        player.x +=
+            player.facing * 10;
+
+        player.state =
+            "dash";
+
+        return;
+    }
+
+
+    if (
+        player.backdash > 0
+    ) {
+
+        player.backdash--;
+
+        player.x -=
+            player.facing * 8;
+
+        player.state =
+            "backdash";
+
+        return;
+    }
+
+
+    /*
+       점프
+    */
+
+    if (
+        keys["arrowup"]
+    ) {
+
+        player.vy =
+            12;
+
+        player.airborne =
+            true;
+
+        player.state =
+            "jump";
+
+        return;
+    }
+
+
+    /*
+       공격 입력
+    */
+
+    if (
+        keys["j"]
+    ) {
+
+        startAttack(
+            player,
+            "leftPunch"
+        );
+
+        return;
+    }
+
+
+    if (
+        keys["k"]
+    ) {
+
+        startAttack(
+            player,
+            "rightPunch"
+        );
+
+        return;
+    }
+
+
+    if (
+        keys["u"]
+    ) {
+
+        startAttack(
+            player,
+            "uppercut"
+        );
+
+        return;
+    }
+
+
+    if (
+        keys["i"]
+    ) {
+
+        startAttack(
+            player,
+            "frontKick"
+        );
+
+        return;
+    }
+
+
+    if (
+        keys["o"]
+    ) {
+
+        startAttack(
+            player,
+            "lowKick"
+        );
+
+        return;
+    }
+
+
+    /*
+       하단 자세
+    */
+
+    if (
+        keys["arrowdown"]
+    ) {
+
+        player.state =
+            "crouch";
+
+        return;
+    }
+
+
+    /*
+       이동
+    */
 
     let moved = false;
 
@@ -2148,105 +1845,27 @@ function updatePlayer() {
 
 
     if (
-        keys["arrowup"]
+        keys[" "]
     ) {
 
-        player.vy = 12;
-
-        player.airborne =
-            true;
-
         player.state =
-            "jump";
+            "guard";
 
         return;
     }
 
 
-    if (
-        keys["arrowdown"]
-    ) {
-
-        player.state =
-            "crouch";
-    }
-
-
-    else if (
-        keys["a"]
-    ) {
-
-        startAttack(
-            player,
-            "high"
-        );
-    }
-
-
-    else if (
-        keys["s"]
-    ) {
-
-        startAttack(
-            player,
-            "mid"
-        );
-    }
-
-
-    else if (
-        keys["d"]
-    ) {
-
-        startAttack(
-            player,
-            "low"
-        );
-    }
-
-
-    else if (
-        keys["f"]
-    ) {
-
-        startAttack(
-            player,
-            "launcher"
-        );
-    }
-
-
-    else if (
-        canGuard(
-            player,
-            cpu
-        )
-    ) {
-
-        player.state =
-            "guard";
-    }
-
-
-    else if (moved) {
-
-        player.state =
-            "walk";
-    }
-
-
-    else {
-
-        player.state =
-            "idle";
-    }
+    player.state =
+        moved
+        ? "walk"
+        : "idle";
 
 
     player.x =
         clamp(
             player.x,
-            75,
-            W - 75
+            70,
+            W - 70
         );
 }
 
@@ -2274,9 +1893,6 @@ function updateCPU() {
 
         cpu.vx *= .88;
 
-        cpu.state =
-            "hit";
-
 
         if (
             cpu.airborne
@@ -2301,7 +1917,6 @@ function updateCPU() {
             }
         }
 
-
         return;
     }
 
@@ -2311,11 +1926,6 @@ function updateCPU() {
     ) {
 
         cpu.blockstun--;
-
-        cpu.x +=
-            cpu.vx;
-
-        cpu.vx *= .86;
 
         cpu.state =
             "guard";
@@ -2335,6 +1945,17 @@ function updateCPU() {
 
 
         if (
+            cpu.attack
+        ) {
+
+            updateAttack(
+                cpu,
+                player
+            );
+        }
+
+
+        if (
             cpu.y <= 0
         ) {
 
@@ -2345,18 +1966,6 @@ function updateCPU() {
             cpu.airborne =
                 false;
         }
-
-
-        if (
-            cpu.attack
-        ) {
-
-            updateAttack(
-                cpu,
-                player
-            );
-        }
-
 
         return;
     }
@@ -2385,11 +1994,42 @@ function updateCPU() {
         );
 
 
+    /*
+       접근
+    */
+
     if (
-        cpu.aiGuard > 0
+        d > 155
     ) {
 
-        cpu.aiGuard--;
+        cpu.x +=
+            Math.sign(
+                player.x -
+                cpu.x
+            ) * 2.5;
+
+        cpu.state =
+            "walk";
+
+        return;
+    }
+
+
+    /*
+       플레이어가 공격 중이면
+       일정 확률로 가드
+    */
+
+    if (
+        player.attack &&
+        Math.random() < .5
+    ) {
+
+        cpu.aiGuard =
+            18 +
+            Math.floor(
+                Math.random() * 22
+            );
 
         cpu.state =
             "guard";
@@ -2399,24 +2039,13 @@ function updateCPU() {
 
 
     if (
-        d > 150
+        cpu.aiGuard > 0
     ) {
 
-        if (
-            cpu.x > player.x
-        ) {
-
-            cpu.x -= 2.4;
-        }
-
-        else {
-
-            cpu.x += 2.4;
-        }
-
+        cpu.aiGuard--;
 
         cpu.state =
-            "walk";
+            "guard";
 
         return;
     }
@@ -2435,112 +2064,71 @@ function updateCPU() {
     }
 
 
-    /*
-       플레이어가 공격하면
-       일정 확률로 가드
-    */
-
-    if (
-        player.attack &&
-        Math.random() < .42
-    ) {
-
-        cpu.aiGuard =
-            20 +
-            Math.floor(
-                Math.random() * 20
-            );
-
-        cpu.state =
-            "guard";
-
-        return;
-    }
+    const r =
+        Math.random();
 
 
-    const attacks = [];
-
-
-    for (
-        const type in cpu.cooldowns
-    ) {
-
-        if (
-            cpu.cooldowns[type] <= 0
-        ) {
-
-            attacks.push(
-                type
-            );
-        }
-    }
+    let attack;
 
 
     if (
-        attacks.length > 0
+        r < .16
     ) {
 
-        const roll =
-            Math.random();
+        attack =
+            "leftPunch";
+    }
+
+    else if (
+        r < .33
+    ) {
+
+        attack =
+            "rightPunch";
+    }
+
+    else if (
+        r < .50
+    ) {
+
+        attack =
+            "frontKick";
+    }
+
+    else if (
+        r < .67
+    ) {
+
+        attack =
+            "lowKick";
+    }
+
+    else if (
+        r < .84
+    ) {
+
+        attack =
+            "uppercut";
+    }
+
+    else {
+
+        attack =
+            "heavyKick";
+    }
 
 
-        let type;
+    startAttack(
+        cpu,
+        attack
+    );
 
 
-        if (
-            roll < .25
-        ) {
-
-            type = "low";
-        }
-
-        else if (
-            roll < .55
-        ) {
-
-            type = "mid";
-        }
-
-        else if (
-            roll < .82
-        ) {
-
-            type = "high";
-        }
-
-        else {
-
-            type = "launcher";
-        }
-
-
-        if (
-            cpu.cooldowns[type] > 0
-        ) {
-
-            type =
-                attacks[
-                    Math.floor(
-                        Math.random()
-                        *
-                        attacks.length
-                    )
-                ];
-        }
-
-
-        startAttack(
-            cpu,
-            type
+    cpu.aiAttackCooldown =
+        22 +
+        Math.floor(
+            Math.random() * 24
         );
-
-
-        cpu.aiAttackCooldown =
-            25 +
-            Math.floor(
-                Math.random() * 25
-            );
-    }
 }
 
 
@@ -2611,14 +2199,10 @@ function showCombo(f) {
                 );
 
             },
-            600
+            650
         );
 }
 
-
-/* =========================================================
-   TEXT
-========================================================= */
 
 function showHitText(
     text,
@@ -2628,10 +2212,8 @@ function showHitText(
     hitTextEl.innerText =
         text;
 
-
     hitTextEl.style.color =
         color;
-
 
     hitTextEl.classList.add(
         "show"
@@ -2652,7 +2234,7 @@ function showHitText(
                 );
 
             },
-            280
+            300
         );
 }
 
@@ -2672,7 +2254,7 @@ function spawnImpact(
 
     for (
         let i = 0;
-        i < 14;
+        i < 15;
         i++
     ) {
 
@@ -2684,19 +2266,19 @@ function spawnImpact(
 
             vx:
                 (
-                    Math.random()
-                    - .5
+                    Math.random() -
+                    .5
                 ) * 9,
 
             vy:
                 (
-                    Math.random()
-                    - .5
+                    Math.random() -
+                    .5
                 ) * 9,
 
             life:
                 15 +
-                Math.random() * 15,
+                Math.random() * 18,
 
             color: color,
 
@@ -2714,14 +2296,11 @@ function updateParticles() {
         const p of particles
     ) {
 
-        p.x +=
-            p.vx;
+        p.x += p.vx;
 
-        p.y +=
-            p.vy;
+        p.y += p.vy;
 
-        p.vy +=
-            .25;
+        p.vy += .25;
 
         p.life--;
     }
@@ -2750,25 +2329,867 @@ function flashScreen() {
 
 
 /* =========================================================
+   DRAW STICKMAN
+========================================================= */
+
+function drawStickman(
+    f,
+    color,
+    darkColor
+) {
+
+    /*
+       캐릭터 크기
+       실제 화면에서 크게 보이도록 1.25
+    */
+
+    const scale =
+        1.25;
+
+
+    const baseY =
+        H - 125 - f.y;
+
+
+    ctx.save();
+
+
+    ctx.translate(
+        f.x,
+        baseY
+    );
+
+
+    ctx.scale(
+        f.facing * scale,
+        scale
+    );
+
+
+    /*
+       그림자
+    */
+
+    ctx.save();
+
+    ctx.scale(
+        1,
+        .25
+    );
+
+    ctx.fillStyle =
+        "rgba(0,0,0,.55)";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        0,
+        10,
+        45,
+        14,
+        0,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+    ctx.restore();
+
+
+    let bodyTilt = 0;
+
+    let crouch = 0;
+
+    let leftArm = {
+        x: -32,
+        y: -72
+    };
+
+    let rightArm = {
+        x: 32,
+        y: -72
+    };
+
+    let leftLeg = {
+        x: -18,
+        y: 36
+    };
+
+    let rightLeg = {
+        x: 18,
+        y: 36
+    };
+
+
+    /*
+       WALK
+    */
+
+    if (
+        f.state === "walk"
+    ) {
+
+        const w =
+            Math.sin(
+                f.animationTime * .32
+            );
+
+        leftLeg.x =
+            -18 - w * 20;
+
+        rightLeg.x =
+            18 + w * 20;
+
+        leftArm.x =
+            -30 + w * 15;
+
+        rightArm.x =
+            30 - w * 15;
+    }
+
+
+    /*
+       DASH
+    */
+
+    if (
+        f.state === "dash"
+    ) {
+
+        bodyTilt =
+            -.18;
+
+        leftArm.x =
+            -52;
+
+        leftArm.y =
+            -76;
+
+        rightArm.x =
+            48;
+
+        rightArm.y =
+            -55;
+
+        leftLeg.x =
+            -38;
+
+        rightLeg.x =
+            30;
+    }
+
+
+    /*
+       BACKDASH
+    */
+
+    if (
+        f.state === "backdash"
+    ) {
+
+        bodyTilt =
+            .22;
+
+        leftArm.x =
+            -48;
+
+        rightArm.x =
+            38;
+
+        leftLeg.x =
+            -32;
+
+        rightLeg.x =
+            38;
+    }
+
+
+    /*
+       CROUCH
+    */
+
+    if (
+        f.state === "crouch"
+    ) {
+
+        crouch = 20;
+
+        leftLeg.x =
+            -28;
+
+        rightLeg.x =
+            28;
+    }
+
+
+    /*
+       GUARD
+    */
+
+    if (
+        f.state === "guard"
+    ) {
+
+        leftArm.x =
+            15;
+
+        leftArm.y =
+            -100;
+
+        rightArm.x =
+            36;
+
+        rightArm.y =
+            -91;
+    }
+
+
+    /*
+       LEFT PUNCH
+    */
+
+    if (
+        f.state === "attack" &&
+        f.attack === "leftPunch"
+    ) {
+
+        if (
+            f.attackFrame <
+            ATTACKS.leftPunch.startup
+        ) {
+
+            leftArm.x =
+                -18;
+
+            leftArm.y =
+                -70;
+
+        } else {
+
+            leftArm.x =
+                70;
+
+            leftArm.y =
+                -86;
+
+            bodyTilt =
+                -.06;
+        }
+    }
+
+
+    /*
+       RIGHT PUNCH
+    */
+
+    if (
+        f.state === "attack" &&
+        f.attack === "rightPunch"
+    ) {
+
+        if (
+            f.attackFrame <
+            ATTACKS.rightPunch.startup
+        ) {
+
+            rightArm.x =
+                20;
+
+            rightArm.y =
+                -70;
+
+        } else {
+
+            rightArm.x =
+                78;
+
+            rightArm.y =
+                -72;
+
+            bodyTilt =
+                -.10;
+        }
+    }
+
+
+    /*
+       UPPERCUT
+    */
+
+    if (
+        f.state === "attack" &&
+        f.attack === "uppercut"
+    ) {
+
+        rightArm.x =
+            52;
+
+        rightArm.y =
+            -116;
+
+        leftArm.x =
+            -25;
+
+        leftArm.y =
+            -75;
+
+        bodyTilt =
+            -.08;
+    }
+
+
+    /*
+       FRONT KICK
+    */
+
+    if (
+        f.state === "attack" &&
+        f.attack === "frontKick"
+    ) {
+
+        rightLeg.x =
+            65;
+
+        rightLeg.y =
+            -5;
+
+        bodyTilt =
+            -.12;
+    }
+
+
+    /*
+       LOW KICK
+    */
+
+    if (
+        f.state === "attack" &&
+        f.attack === "lowKick"
+    ) {
+
+        crouch = 13;
+
+        rightLeg.x =
+            68;
+
+        rightLeg.y =
+            25;
+
+        bodyTilt =
+            -.15;
+    }
+
+
+    /*
+       HEAVY KICK
+    */
+
+    if (
+        f.state === "attack" &&
+        f.attack === "heavyKick"
+    ) {
+
+        rightLeg.x =
+            75;
+
+        rightLeg.y =
+            -22;
+
+        bodyTilt =
+            -.18;
+    }
+
+
+    /*
+       HIT
+    */
+
+    if (
+        f.state === "hit"
+    ) {
+
+        bodyTilt =
+            -.25;
+
+        leftArm.x =
+            -48;
+
+        leftArm.y =
+            -58;
+
+        rightArm.x =
+            42;
+
+        rightArm.y =
+            -54;
+
+        leftLeg.x =
+            -32;
+
+        rightLeg.x =
+            32;
+    }
+
+
+    ctx.rotate(
+        bodyTilt
+    );
+
+
+    /*
+       LEGS
+    */
+
+    ctx.lineCap =
+        "round";
+
+    ctx.lineJoin =
+        "round";
+
+    ctx.lineWidth =
+        14;
+
+
+    ctx.strokeStyle =
+        darkColor;
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        -9,
+        -40 + crouch
+    );
+
+    ctx.lineTo(
+        leftLeg.x,
+        leftLeg.y
+    );
+
+    ctx.stroke();
+
+
+    ctx.strokeStyle =
+        color;
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        9,
+        -40 + crouch
+    );
+
+    ctx.lineTo(
+        rightLeg.x,
+        rightLeg.y
+    );
+
+    ctx.stroke();
+
+
+    /*
+       BODY
+    */
+
+    ctx.strokeStyle =
+        color;
+
+    ctx.lineWidth =
+        19;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        0,
+        -110 + crouch
+    );
+
+    ctx.lineTo(
+        0,
+        -42 + crouch
+    );
+
+    ctx.stroke();
+
+
+    /*
+       HEAD
+    */
+
+    ctx.fillStyle =
+        color;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        0,
+        -130 + crouch,
+        20,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    /*
+       ARMS
+    */
+
+    ctx.lineWidth =
+        13;
+
+    ctx.strokeStyle =
+        darkColor;
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        -10,
+        -97 + crouch
+    );
+
+    ctx.lineTo(
+        leftArm.x,
+        leftArm.y + crouch
+    );
+
+    ctx.stroke();
+
+
+    ctx.strokeStyle =
+        color;
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        10,
+        -97 + crouch
+    );
+
+    ctx.lineTo(
+        rightArm.x,
+        rightArm.y + crouch
+    );
+
+    ctx.stroke();
+
+
+    /*
+       FIST
+    */
+
+    ctx.fillStyle =
+        color;
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        rightArm.x,
+        rightArm.y + crouch,
+        8,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    ctx.restore();
+}
+
+
+/* =========================================================
+   ATTACK EFFECT
+========================================================= */
+
+function drawAttackEffect(f) {
+
+    if (!f.attack) return;
+
+    if (!attackActive(f)) return;
+
+
+    const a =
+        ATTACKS[
+            f.attack
+        ];
+
+
+    let color;
+
+
+    if (
+        a.level === "high"
+    ) {
+
+        color =
+            "#ffd34d";
+
+    } else if (
+        a.level === "mid"
+    ) {
+
+        color =
+            "#5ddcff";
+
+    } else {
+
+        color =
+            "#ff5d8a";
+    }
+
+
+    ctx.save();
+
+
+    ctx.translate(
+        f.x,
+        H - 125 - f.y
+    );
+
+
+    ctx.scale(
+        f.facing,
+        1
+    );
+
+
+    ctx.globalAlpha =
+        .75;
+
+    ctx.strokeStyle =
+        color;
+
+    ctx.lineWidth =
+        6;
+
+
+    ctx.beginPath();
+
+
+    if (
+        a.level === "low"
+    ) {
+
+        ctx.arc(
+            35,
+            -40,
+            50,
+            -.2,
+            1.2
+        );
+
+    } else {
+
+        ctx.arc(
+            45,
+            -75,
+            52,
+            -.9,
+            .6
+        );
+    }
+
+
+    ctx.stroke();
+
+
+    ctx.restore();
+}
+
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+function drawBackground() {
+
+    /*
+       경기장 세로 구조물
+    */
+
+    for (
+        let i = 0;
+        i < 10;
+        i++
+    ) {
+
+        const x =
+            i * W / 9;
+
+        ctx.fillStyle =
+            "rgba(0,0,0,.13)";
+
+        ctx.fillRect(
+            x,
+            90,
+            22,
+            H - 210
+        );
+    }
+
+
+    /*
+       바닥 원근선
+    */
+
+    ctx.strokeStyle =
+        "rgba(255,255,255,.04)";
+
+    ctx.lineWidth = 1;
+
+
+    for (
+        let y = H - 120;
+        y < H;
+        y += 32
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            0,
+            y
+        );
+
+        ctx.lineTo(
+            W,
+            y
+        );
+
+        ctx.stroke();
+    }
+}
+
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+function render() {
+
+    ctx.clearRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+
+    drawBackground();
+
+
+    /*
+       PARTICLES
+    */
+
+    for (
+        const p of particles
+    ) {
+
+        ctx.globalAlpha =
+            p.life / 30;
+
+        ctx.fillStyle =
+            p.color;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            p.size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+    }
+
+
+    ctx.globalAlpha = 1;
+
+
+    if (player) {
+
+        drawStickman(
+            player,
+            "#246bff",
+            "#123d99"
+        );
+
+        drawAttackEffect(
+            player
+        );
+    }
+
+
+    if (cpu) {
+
+        drawStickman(
+            cpu,
+            "#ed273b",
+            "#8f1221"
+        );
+
+        drawAttackEffect(
+            cpu
+        );
+    }
+
+
+    updateHUD();
+}
+
+
+/* =========================================================
+   HUD
+========================================================= */
+
+function updateHUD() {
+
+    if (!player) return;
+
+
+    playerHP.style.width =
+        clamp(
+            player.hp,
+            0,
+            100
+        ) + "%";
+
+
+    cpuHP.style.width =
+        clamp(
+            cpu.hp,
+            0,
+            100
+        ) + "%";
+}
+
+
+/* =========================================================
    TIMER
 ========================================================= */
 
 function updateTimer(dt) {
 
-    secondTimer +=
-        dt;
+    secondTimer += dt;
 
 
     if (
         secondTimer >= 1000
     ) {
 
-        secondTimer -=
-            1000;
-
+        secondTimer -= 1000;
 
         gameTime--;
-
 
         timerEl.innerText =
             gameTime;
@@ -2786,9 +3207,8 @@ function updateTimer(dt) {
                 gameOver(
                     "BLUE WINS!"
                 );
-            }
 
-            else if (
+            } else if (
                 cpu.hp >
                 player.hp
             ) {
@@ -2796,9 +3216,8 @@ function updateTimer(dt) {
                 gameOver(
                     "RED WINS!"
                 );
-            }
 
-            else {
+            } else {
 
                 gameOver(
                     "DRAW!"
@@ -2851,18 +3270,14 @@ function gameOver(text) {
 
     running = false;
 
-
     messageEl.innerText =
         text;
-
 
     messageEl.style.display =
         "block";
 
-
     startEl.style.display =
         "flex";
-
 
     startButton.innerText =
         "REMATCH";
@@ -2870,835 +3285,7 @@ function gameOver(text) {
 
 
 /* =========================================================
-   STICKMAN
-========================================================= */
-
-function drawStickman(
-    f,
-    color,
-    darkColor
-) {
-
-    /*
-       =====================================
-       캐릭터 크기
-       =====================================
-
-       이전:
-       0.78
-
-       현재:
-       1.25
-
-       화면을 꽤 크게 차지하도록 변경
-    */
-
-    const scale = 1.25;
-
-
-    const baseY =
-        H - 130 - f.y;
-
-
-    ctx.save();
-
-
-    ctx.translate(
-        f.x,
-        baseY
-    );
-
-
-    ctx.scale(
-        f.facing * scale,
-        scale
-    );
-
-
-    /*
-       그림자
-    */
-
-    ctx.save();
-
-    ctx.scale(
-        1,
-        .25
-    );
-
-
-    ctx.fillStyle =
-        "rgba(0,0,0,.58)";
-
-
-    ctx.beginPath();
-
-    ctx.ellipse(
-        0,
-        7,
-        44,
-        13,
-        0,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    ctx.restore();
-
-
-    /*
-       기본 포즈
-    */
-
-    let frontArmX = 30;
-
-    let frontArmY = -72;
-
-    let backArmX = -30;
-
-    let backArmY = -70;
-
-    let frontLegX = 18;
-
-    let backLegX = -18;
-
-    let bodyTilt = 0;
-
-    let crouch = 0;
-
-
-    /*
-       걷기
-    */
-
-    if (
-        f.state === "walk"
-    ) {
-
-        const w =
-            Math.sin(
-                f.animationTime * .32
-            );
-
-
-        frontLegX =
-            18 +
-            w * 20;
-
-
-        backLegX =
-            -18 -
-            w * 20;
-    }
-
-
-    /*
-       앉기
-    */
-
-    if (
-        f.state === "crouch"
-    ) {
-
-        crouch = 20;
-
-        frontLegX = 23;
-
-        backLegX = -23;
-    }
-
-
-    /*
-       가드
-    */
-
-    if (
-        f.state === "guard"
-    ) {
-
-        frontArmX = 23;
-
-        frontArmY = -91;
-
-        backArmX = 4;
-
-        backArmY = -94;
-    }
-
-
-    /*
-       상단
-    */
-
-    if (
-        f.state === "attack" &&
-        f.attack === "high"
-    ) {
-
-        const t =
-            f.attackFrame;
-
-
-        if (
-            t < 7
-        ) {
-
-            frontArmX = 18;
-
-            frontArmY = -70;
-        }
-
-        else {
-
-            frontArmX = 70;
-
-            frontArmY = -92;
-        }
-    }
-
-
-    /*
-       중단
-    */
-
-    if (
-        f.state === "attack" &&
-        f.attack === "mid"
-    ) {
-
-        frontArmX = 69;
-
-        frontArmY = -56;
-
-        bodyTilt = .09;
-    }
-
-
-    /*
-       하단
-    */
-
-    if (
-        f.state === "attack" &&
-        f.attack === "low"
-    ) {
-
-        crouch = 16;
-
-        frontLegX = 52;
-
-        backLegX = -20;
-    }
-
-
-    /*
-       런처
-    */
-
-    if (
-        f.state === "attack" &&
-        f.attack === "launcher"
-    ) {
-
-        frontArmX = 65;
-
-        frontArmY = -105;
-
-        bodyTilt = -.12;
-    }
-
-
-    /*
-       피격
-    */
-
-    if (
-        f.state === "hit"
-    ) {
-
-        bodyTilt = -.28;
-
-        frontArmX = 43;
-
-        frontArmY = -62;
-
-        backArmX = -37;
-
-        backArmY = -55;
-    }
-
-
-    ctx.rotate(
-        bodyTilt
-    );
-
-
-    /*
-       =================================
-       다리
-       =================================
-    */
-
-    ctx.lineCap =
-        "round";
-
-    ctx.lineJoin =
-        "round";
-
-
-    /*
-       뒤쪽 다리
-    */
-
-    ctx.strokeStyle =
-        darkColor;
-
-    ctx.lineWidth =
-        14;
-
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        -9,
-        -40 + crouch
-    );
-
-    ctx.lineTo(
-        backLegX,
-        35
-    );
-
-    ctx.stroke();
-
-
-    /*
-       앞쪽 다리
-    */
-
-    ctx.strokeStyle =
-        color;
-
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        9,
-        -40 + crouch
-    );
-
-    ctx.lineTo(
-        frontLegX,
-        35
-    );
-
-    ctx.stroke();
-
-
-    /*
-       =================================
-       몸통
-       =================================
-    */
-
-    ctx.strokeStyle =
-        color;
-
-    ctx.lineWidth =
-        19;
-
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        0,
-        -110 + crouch
-    );
-
-    ctx.lineTo(
-        0,
-        -42 + crouch
-    );
-
-    ctx.stroke();
-
-
-    /*
-       =================================
-       머리
-       =================================
-    */
-
-    ctx.fillStyle =
-        color;
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-        0,
-        -130 + crouch,
-        20,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    /*
-       얼굴은 그리지 않는다.
-       눈 / 코 / 입 없음.
-    */
-
-
-    /*
-       =================================
-       뒤쪽 팔
-       =================================
-    */
-
-    ctx.strokeStyle =
-        darkColor;
-
-    ctx.lineWidth =
-        13;
-
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        -10,
-        -97 + crouch
-    );
-
-    ctx.lineTo(
-        backArmX,
-        backArmY + crouch
-    );
-
-    ctx.stroke();
-
-
-    /*
-       =================================
-       앞쪽 팔
-       =================================
-    */
-
-    ctx.strokeStyle =
-        color;
-
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        10,
-        -97 + crouch
-    );
-
-    ctx.lineTo(
-        frontArmX,
-        frontArmY + crouch
-    );
-
-    ctx.stroke();
-
-
-    /*
-       주먹
-    */
-
-    ctx.fillStyle =
-        color;
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-        frontArmX,
-        frontArmY + crouch,
-        8,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    ctx.restore();
-}
-
-
-/* =========================================================
-   ATTACK EFFECT
-========================================================= */
-
-function drawAttackEffect(f) {
-
-    if (!f.attack) {
-        return;
-    }
-
-
-    if (
-        !attackActive(f)
-    ) {
-
-        return;
-    }
-
-
-    const a =
-        ATTACKS[
-            f.attack
-        ];
-
-
-    let color =
-        "#fff";
-
-
-    if (
-        a.level === "high"
-    ) {
-
-        color =
-            "#ffd34d";
-    }
-
-    else if (
-        a.level === "mid"
-    ) {
-
-        color =
-            "#58d9ff";
-    }
-
-    else {
-
-        color =
-            "#ff6487";
-    }
-
-
-    ctx.save();
-
-
-    ctx.translate(
-        f.x,
-        H - 130 - f.y
-    );
-
-
-    ctx.scale(
-        f.facing,
-        1
-    );
-
-
-    ctx.strokeStyle =
-        color;
-
-
-    ctx.lineWidth =
-        6;
-
-
-    ctx.globalAlpha =
-        .72;
-
-
-    ctx.beginPath();
-
-
-    if (
-        a.level === "low"
-    ) {
-
-        ctx.arc(
-            30,
-            -45,
-            45,
-            -.2,
-            1.1
-        );
-    }
-
-    else {
-
-        ctx.arc(
-            48,
-            -75,
-            50,
-            -.9,
-            .6
-        );
-    }
-
-
-    ctx.stroke();
-
-
-    ctx.restore();
-}
-
-
-/* =========================================================
-   BACKGROUND
-========================================================= */
-
-function drawBackground() {
-
-    /*
-       배경 기둥
-    */
-
-    for (
-        let i = 0;
-        i < 9;
-        i++
-    ) {
-
-        const x =
-            i * W / 8;
-
-
-        ctx.fillStyle =
-            "rgba(0,0,0,.15)";
-
-
-        ctx.fillRect(
-            x,
-            90,
-            25,
-            H - 215
-        );
-    }
-
-
-    /*
-       바닥 라인
-    */
-
-    ctx.strokeStyle =
-        "rgba(255,255,255,.035)";
-
-    ctx.lineWidth = 1;
-
-
-    for (
-        let y = H - 125;
-        y < H;
-        y += 32
-    ) {
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            0,
-            y
-        );
-
-        ctx.lineTo(
-            W,
-            y
-        );
-
-        ctx.stroke();
-    }
-}
-
-
-/* =========================================================
-   RENDER
-========================================================= */
-
-function render() {
-
-    ctx.clearRect(
-        0,
-        0,
-        W,
-        H
-    );
-
-
-    drawBackground();
-
-
-    /*
-       파티클
-    */
-
-    for (
-        const p of particles
-    ) {
-
-        ctx.globalAlpha =
-            p.life / 30;
-
-
-        ctx.fillStyle =
-            p.color;
-
-
-        ctx.beginPath();
-
-        ctx.arc(
-            p.x,
-            p.y,
-            p.size,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fill();
-    }
-
-
-    ctx.globalAlpha = 1;
-
-
-    /*
-       플레이어
-    */
-
-    if (player) {
-
-        drawStickman(
-            player,
-            "#246bff",
-            "#123d99"
-        );
-
-
-        drawAttackEffect(
-            player
-        );
-    }
-
-
-    /*
-       CPU
-    */
-
-    if (cpu) {
-
-        drawStickman(
-            cpu,
-            "#ed273b",
-            "#8f1221"
-        );
-
-
-        drawAttackEffect(
-            cpu
-        );
-    }
-
-
-    updateHUD();
-}
-
-
-/* =========================================================
-   HUD
-========================================================= */
-
-function updateHUD() {
-
-    if (!player) {
-        return;
-    }
-
-
-    playerHP.style.width =
-        clamp(
-            player.hp,
-            0,
-            100
-        ) + "%";
-
-
-    cpuHP.style.width =
-        clamp(
-            cpu.hp,
-            0,
-            100
-        ) + "%";
-
-
-    updateSkillUI();
-}
-
-
-/* =========================================================
-   SKILL UI
-========================================================= */
-
-function updateSkillUI() {
-
-    for (
-        const type in skillUI
-    ) {
-
-        const ui =
-            skillUI[type];
-
-
-        const cd =
-            player.cooldowns[type];
-
-
-        const max =
-            ATTACKS[type].cooldown;
-
-
-        if (
-            cd > 0
-        ) {
-
-            ui.box.classList.remove(
-                "ready"
-            );
-
-
-            ui.box.classList.add(
-                "cooling"
-            );
-
-
-            ui.fill.style.height =
-                (
-                    cd / max * 100
-                ) + "%";
-        }
-
-        else {
-
-            ui.box.classList.remove(
-                "cooling"
-            );
-
-
-            ui.box.classList.add(
-                "ready"
-            );
-
-
-            ui.fill.style.height =
-                "0%";
-        }
-    }
-}
-
-
-/* =========================================================
-   UPDATE
+   LOOP
 ========================================================= */
 
 function update(dt) {
@@ -3707,35 +3294,30 @@ function update(dt) {
 
     updateCPU();
 
-    updateCooldowns(player);
-
-    updateCooldowns(cpu);
-
     updateCombos();
 
     updateParticles();
 
     updateTimer(dt);
 
+
+    if (dashBuffer > 0) {
+        dashBuffer--;
+    }
+
+    if (backBuffer > 0) {
+        backBuffer--;
+    }
+
+
+    player.animationTime++;
+
+    cpu.animationTime++;
+
+
     checkWinner();
-
-
-    if (player) {
-
-        player.animationTime++;
-    }
-
-
-    if (cpu) {
-
-        cpu.animationTime++;
-    }
 }
 
-
-/* =========================================================
-   GAME LOOP
-========================================================= */
 
 function loop(now) {
 
@@ -3754,8 +3336,7 @@ function loop(now) {
         );
 
 
-    lastTime =
-        now;
+    lastTime = now;
 
 
     update(dt);
