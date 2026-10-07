@@ -7,20 +7,18 @@ st.set_page_config(
     layout="wide",
 )
 
-st.markdown(
-    """
-    <style>
-    .block-container {
-        padding: 0.3rem 0.5rem 0;
-        max-width: 1400px;
-    }
-    [data-testid="stHeader"] {
-        background: transparent;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+st.markdown("""
+<style>
+.block-container {
+    padding: 0.2rem 0.4rem;
+    max-width: 1400px;
+}
+[data-testid="stHeader"] {
+    background: transparent;
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 GAME = r"""
 <!DOCTYPE html>
@@ -35,9 +33,10 @@ GAME = r"""
 
 body {
     margin: 0;
-    background: #08090d;
-    font-family: Arial, sans-serif;
+    background: #07080c;
     color: white;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
 }
 
 #game {
@@ -47,37 +46,39 @@ body {
     height: 720px;
     margin: auto;
     overflow: hidden;
-    border: 2px solid #3c414d;
+
+    border: 2px solid #3b404c;
     border-radius: 14px;
 
     background:
         radial-gradient(
             ellipse at 50% 25%,
-            rgba(255,255,255,.15),
-            transparent 35%
+            rgba(255,255,255,.13),
+            transparent 38%
         ),
         linear-gradient(
-            #101b38 0%,
-            #263f70 54%,
-            #65402f 55%,
-            #222 56%,
-            #101010 100%
+            #111c38 0%,
+            #294775 53%,
+            #633d2b 54%,
+            #1c1c1c 56%,
+            #090909 100%
         );
 }
 
 #arenaGlow {
     position: absolute;
     left: 50%;
-    top: -160px;
-    width: 600px;
-    height: 600px;
+    top: -180px;
+    width: 650px;
+    height: 650px;
     transform: translateX(-50%);
-    background: radial-gradient(
-        ellipse,
-        rgba(255,235,170,.2),
-        transparent 70%
-    );
-    pointer-events: none;
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(255,220,150,.18),
+            transparent 70%
+        );
 }
 
 #floor {
@@ -86,31 +87,34 @@ body {
     right: 0;
     bottom: 118px;
     height: 5px;
-    background: #d7a84c;
-    box-shadow: 0 0 20px rgba(255,190,70,.5);
+
+    background: #d8a74b;
+    box-shadow: 0 0 20px rgba(255,190,70,.55);
 }
 
 #hud {
     position: absolute;
     z-index: 50;
-    left: 22px;
-    right: 22px;
-    top: 17px;
+
+    left: 20px;
+    right: 20px;
+    top: 15px;
 
     display: grid;
+
     grid-template-columns:
-        110px
+        100px
         1fr
         65px
         1fr
-        110px;
+        100px;
 
     align-items: center;
-    gap: 10px;
+    gap: 9px;
 }
 
 .name {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 900;
 }
 
@@ -120,55 +124,63 @@ body {
 
 .health {
     height: 28px;
-    border: 2px solid #e9e9e9;
+
+    border: 2px solid #eee;
     border-radius: 4px;
-    background: #101114;
+
     overflow: hidden;
+
+    background: #111;
 }
 
 .healthInner {
     height: 100%;
     width: 100%;
+
     background:
         linear-gradient(
-            #75ff9d,
-            #19ae5c
+            #72ff9a,
+            #17a956
         );
+
     transition: width .12s;
 }
 
 #cpuHp {
     float: right;
+
     background:
         linear-gradient(
-            #ff7373,
+            #ff7272,
             #d51f38
         );
 }
 
 #timer {
     font-size: 34px;
-    font-weight: 900;
+    font-weight: 1000;
     text-align: center;
 }
 
 #combo {
     position: absolute;
     z-index: 80;
+
     left: 50%;
-    top: 125px;
+    top: 115px;
+
     transform: translateX(-50%);
 
-    font-size: 38px;
+    font-size: 40px;
     font-weight: 1000;
 
-    color: #ffe36a;
+    color: #ffe05d;
+
     text-shadow:
-        0 3px 0 #7b4900,
-        0 7px 20px #000;
+        0 3px 0 #704400,
+        0 6px 20px #000;
 
     opacity: 0;
-    transition: opacity .1s;
 }
 
 #combo.show {
@@ -178,12 +190,14 @@ body {
 #hitText {
     position: absolute;
     z-index: 80;
+
     left: 50%;
-    top: 180px;
+    top: 170px;
+
     transform: translateX(-50%);
 
-    font-size: 20px;
-    font-weight: 900;
+    font-size: 21px;
+    font-weight: 1000;
 
     opacity: 0;
 }
@@ -192,30 +206,14 @@ body {
     opacity: 1;
 }
 
-#hint {
-    position: absolute;
-    z-index: 60;
-    left: 50%;
-    bottom: 15px;
-    transform: translateX(-50%);
-
-    padding: 9px 18px;
-
-    background: rgba(0,0,0,.72);
-    border-radius: 20px;
-
-    color: #ddd;
-    font-size: 13px;
-
-    white-space: nowrap;
-}
-
 #message {
     position: absolute;
     z-index: 100;
+
     left: 50%;
-    top: 44%;
-    transform: translate(-50%,-50%);
+    top: 43%;
+
+    transform: translate(-50%, -50%);
 
     font-size: 65px;
     font-weight: 1000;
@@ -224,73 +222,114 @@ body {
         0 5px 30px #000;
 
     display: none;
+
     text-align: center;
 }
 
-#start {
+#hint {
     position: absolute;
-    z-index: 120;
-    inset: 0;
+    z-index: 60;
+
+    left: 50%;
+    bottom: 70px;
+
+    transform: translateX(-50%);
+
+    padding: 8px 18px;
+
+    background: rgba(0,0,0,.72);
+
+    border-radius: 20px;
+
+    color: #ddd;
+
+    font-size: 13px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================
+   SKILL BAR
+========================= */
+
+#skills {
+    position: absolute;
+    z-index: 70;
+
+    left: 50%;
+    bottom: 15px;
+
+    transform: translateX(-50%);
 
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
 
-    background:
-        radial-gradient(
-            ellipse,
-            rgba(35,40,70,.55),
-            rgba(0,0,0,.94)
-        );
+    gap: 8px;
 }
 
-#start h1 {
-    margin: 0;
-    font-size: 60px;
-    letter-spacing: 4px;
+.skill {
+    position: relative;
+
+    width: 68px;
+    height: 42px;
+
+    border: 2px solid #aaa;
+    border-radius: 6px;
+
+    overflow: hidden;
+
+    background: #15161b;
+
+    text-align: center;
+
+    font-weight: 900;
 }
 
-#start p {
-    color: #aaa;
-    margin: 10px 0 28px;
+.skillKey {
+    position: relative;
+    z-index: 3;
+
+    line-height: 38px;
+
+    font-size: 16px;
 }
 
-button {
-    border: 0;
-    border-radius: 7px;
+.skillFill {
+    position: absolute;
 
-    padding: 14px 40px;
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+    height: 0%;
 
     background:
         linear-gradient(
-            #f23b42,
-            #a81726
+            #ff6464,
+            #a80018
         );
 
-    color: white;
-
-    font-size: 20px;
-    font-weight: 900;
-
-    cursor: pointer;
+    opacity: .85;
 }
 
-button:hover {
-    filter: brightness(1.15);
+.skill.ready {
+    border-color: #69ff9d;
+
+    box-shadow:
+        0 0 12px
+        rgba(80,255,150,.35);
 }
 
-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+.skill.cooling {
+    border-color: #ff5b5b;
 }
 
 #flash {
     position: absolute;
     z-index: 90;
+
     inset: 0;
+
     pointer-events: none;
 
     opacity: 0;
@@ -302,6 +341,7 @@ canvas {
 }
 
 @keyframes screenFlash {
+
     0% {
         opacity: .55;
     }
@@ -311,21 +351,89 @@ canvas {
     }
 }
 
+#start {
+    position: absolute;
+    z-index: 120;
+
+    inset: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(35,40,70,.55),
+            rgba(0,0,0,.95)
+        );
+}
+
+#start h1 {
+    margin: 0;
+
+    font-size: 58px;
+
+    letter-spacing: 4px;
+}
+
+#start p {
+    color: #aaa;
+
+    margin: 10px 0 28px;
+}
+
+button {
+    border: 0;
+
+    border-radius: 7px;
+
+    padding: 14px 42px;
+
+    background:
+        linear-gradient(
+            #f23b42,
+            #a81726
+        );
+
+    color: white;
+
+    font-size: 20px;
+
+    font-weight: 900;
+
+    cursor: pointer;
+}
+
+button:hover {
+    filter: brightness(1.15);
+}
+
+canvas {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+}
+
 @media(max-width:700px) {
 
     #game {
-        height: 600px;
+        height: 620px;
     }
 
     #hud {
         grid-template-columns:
-            55px
+            50px
             1fr
-            45px
+            42px
             1fr
-            55px;
-
-        gap: 5px;
+            50px;
     }
 
     .name {
@@ -337,13 +445,26 @@ canvas {
     }
 
     #hint {
-        font-size: 10px;
+        font-size: 9px;
+
         white-space: normal;
+
         text-align: center;
+
+        width: 90%;
     }
 
     #start h1 {
-        font-size: 38px;
+        font-size: 35px;
+    }
+
+    .skill {
+        width: 55px;
+        height: 36px;
+    }
+
+    .skillKey {
+        line-height: 32px;
     }
 }
 </style>
@@ -358,6 +479,8 @@ canvas {
     <canvas id="canvas"></canvas>
 
     <div id="floor"></div>
+
+    <!-- HUD -->
 
     <div id="hud">
 
@@ -389,25 +512,111 @@ canvas {
 
     </div>
 
+
     <div id="combo">
         3 HIT COMBO
     </div>
+
 
     <div id="hitText">
         MIDDLE
     </div>
 
+
     <div id="flash"></div>
+
 
     <div id="message"></div>
 
-    <div id="hint">
-        ← → 이동　↓ 앉기　A 상단　S 중단　D 하단　F 런처　│ 가만히 있으면 자동 가드
+
+    <!-- SKILLS -->
+
+    <div id="skills">
+
+        <div
+            id="skillHigh"
+            class="skill ready">
+
+            <div class="skillKey">
+                A
+            </div>
+
+            <div
+                id="fillHigh"
+                class="skillFill">
+            </div>
+
+        </div>
+
+
+        <div
+            id="skillMid"
+            class="skill ready">
+
+            <div class="skillKey">
+                S
+            </div>
+
+            <div
+                id="fillMid"
+                class="skillFill">
+            </div>
+
+        </div>
+
+
+        <div
+            id="skillLow"
+            class="skill ready">
+
+            <div class="skillKey">
+                D
+            </div>
+
+            <div
+                id="fillLow"
+                class="skillFill">
+            </div>
+
+        </div>
+
+
+        <div
+            id="skillLauncher"
+            class="skill ready">
+
+            <div class="skillKey">
+                F
+            </div>
+
+            <div
+                id="fillLauncher"
+                class="skillFill">
+            </div>
+
+        </div>
+
     </div>
+
+
+    <div id="hint">
+
+        ← → 이동　
+        ↓ 앉기　
+        A 상단　
+        S 중단　
+        D 하단　
+        F 런처　
+        │ 가만히 있으면 자동 가드
+
+    </div>
+
 
     <div id="start">
 
-        <h1>IRON FIGHTERS</h1>
+        <h1>
+            IRON FIGHTERS
+        </h1>
 
         <p>
             HIGH / MID / LOW FIGHTING SYSTEM
@@ -421,7 +630,12 @@ canvas {
 
 </div>
 
+
 <script>
+
+/* =========================================================
+   CANVAS
+========================================================= */
 
 const game =
     document.getElementById("game");
@@ -432,36 +646,10 @@ const canvas =
 const ctx =
     canvas.getContext("2d");
 
-const playerHp =
-    document.getElementById("playerHp");
-
-const cpuHp =
-    document.getElementById("cpuHp");
-
-const timerEl =
-    document.getElementById("timer");
-
-const comboEl =
-    document.getElementById("combo");
-
-const hitTextEl =
-    document.getElementById("hitText");
-
-const messageEl =
-    document.getElementById("message");
-
-const startEl =
-    document.getElementById("start");
-
-const startButton =
-    document.getElementById("startButton");
-
-const flashEl =
-    document.getElementById("flash");
-
 
 let W = 1200;
 let H = 720;
+
 
 function resize() {
 
@@ -472,10 +660,14 @@ function resize() {
     H = rect.height;
 
     canvas.width =
-        Math.floor(W * devicePixelRatio);
+        Math.floor(
+            W * devicePixelRatio
+        );
 
     canvas.height =
-        Math.floor(H * devicePixelRatio);
+        Math.floor(
+            H * devicePixelRatio
+        );
 
     canvas.style.width =
         W + "px";
@@ -493,6 +685,7 @@ function resize() {
     );
 }
 
+
 window.addEventListener(
     "resize",
     resize
@@ -501,7 +694,12 @@ window.addEventListener(
 resize();
 
 
+/* =========================================================
+   INPUT
+========================================================= */
+
 const keys = {};
+
 
 document.addEventListener(
     "keydown",
@@ -522,10 +720,12 @@ document.addEventListener(
                 e.key.toLowerCase()
             )
         ) {
+
             e.preventDefault();
         }
     }
 );
+
 
 document.addEventListener(
     "keyup",
@@ -538,6 +738,10 @@ document.addEventListener(
 );
 
 
+/* =========================================================
+   ATTACK DATA
+========================================================= */
+
 const ATTACKS = {
 
     high: {
@@ -545,7 +749,9 @@ const ATTACKS = {
         level: "high",
 
         startup: 6,
+
         active: 4,
+
         recovery: 13,
 
         range: 112,
@@ -558,15 +764,20 @@ const ATTACKS = {
 
         knockback: 5,
 
-        comboScale: .94
+        comboScale: .94,
+
+        cooldown: 12
     },
+
 
     mid: {
 
         level: "mid",
 
         startup: 10,
+
         active: 5,
+
         recovery: 18,
 
         range: 128,
@@ -579,15 +790,20 @@ const ATTACKS = {
 
         knockback: 9,
 
-        comboScale: .93
+        comboScale: .93,
+
+        cooldown: 18
     },
+
 
     low: {
 
         level: "low",
 
         startup: 13,
+
         active: 6,
+
         recovery: 21,
 
         range: 118,
@@ -600,15 +816,20 @@ const ATTACKS = {
 
         knockback: 6,
 
-        comboScale: .92
+        comboScale: .92,
+
+        cooldown: 22
     },
+
 
     launcher: {
 
         level: "mid",
 
         startup: 17,
+
         active: 7,
+
         recovery: 27,
 
         range: 125,
@@ -623,16 +844,19 @@ const ATTACKS = {
 
         launcher: true,
 
-        comboScale: .88
+        comboScale: .88,
+
+        cooldown: 45
     }
 
 };
 
 
-function makeFighter(
-    x,
-    cpu
-) {
+/* =========================================================
+   FIGHTER
+========================================================= */
+
+function makeFighter(x, cpu) {
 
     return {
 
@@ -641,6 +865,7 @@ function makeFighter(
         y: 0,
 
         vx: 0,
+
         vy: 0,
 
         hp: 100,
@@ -677,12 +902,30 @@ function makeFighter(
 
         aiAttackCooldown: 0,
 
-        lastHitLevel: ""
+        lastHitLevel: "",
+
+        lastAttack: null,
+
+        cooldowns: {
+
+            high: 0,
+
+            mid: 0,
+
+            low: 0,
+
+            launcher: 0
+        }
     };
 }
 
 
+/* =========================================================
+   GAME STATE
+========================================================= */
+
 let player;
+
 let cpu;
 
 let running = false;
@@ -693,6 +936,10 @@ let secondAccumulator = 0;
 
 let lastTime = 0;
 
+
+/* =========================================================
+   START
+========================================================= */
 
 function startGame() {
 
@@ -729,6 +976,108 @@ function startGame() {
 }
 
 
+/* =========================================================
+   DOM
+========================================================= */
+
+const playerHp =
+    document.getElementById(
+        "playerHp"
+    );
+
+const cpuHp =
+    document.getElementById(
+        "cpuHp"
+    );
+
+const timerEl =
+    document.getElementById(
+        "timer"
+    );
+
+const comboEl =
+    document.getElementById(
+        "combo"
+    );
+
+const hitTextEl =
+    document.getElementById(
+        "hitText"
+    );
+
+const messageEl =
+    document.getElementById(
+        "message"
+    );
+
+const startEl =
+    document.getElementById(
+        "start"
+    );
+
+const startButton =
+    document.getElementById(
+        "startButton"
+    );
+
+const flashEl =
+    document.getElementById(
+        "flash"
+    );
+
+
+const skillElements = {
+
+    high: {
+        box:
+            document.getElementById(
+                "skillHigh"
+            ),
+        fill:
+            document.getElementById(
+                "fillHigh"
+            )
+    },
+
+    mid: {
+        box:
+            document.getElementById(
+                "skillMid"
+            ),
+        fill:
+            document.getElementById(
+                "fillMid"
+            )
+    },
+
+    low: {
+        box:
+            document.getElementById(
+                "skillLow"
+            ),
+        fill:
+            document.getElementById(
+                "fillLow"
+            )
+    },
+
+    launcher: {
+        box:
+            document.getElementById(
+                "skillLauncher"
+            ),
+        fill:
+            document.getElementById(
+                "fillLauncher"
+            )
+    }
+};
+
+
+/* =========================================================
+   UTILITY
+========================================================= */
+
 function clamp(
     value,
     min,
@@ -745,10 +1094,20 @@ function clamp(
 }
 
 
-function distance(a,b) {
+function distance(a, b) {
 
     return Math.abs(
         a.x - b.x
+    );
+}
+
+
+function busy(f) {
+
+    return (
+        f.hitstun > 0 ||
+        f.blockstun > 0 ||
+        f.knockdown > 0
     );
 }
 
@@ -765,22 +1124,20 @@ function faceOpponent(
 }
 
 
-function busy(f) {
-
-    return (
-        f.hitstun > 0 ||
-        f.blockstun > 0 ||
-        f.knockdown > 0
-    );
-}
-
+/* =========================================================
+   CROUCH / GUARD
+========================================================= */
 
 function isCrouching(f) {
 
-    return (
-        keys["arrowdown"] &&
-        !f.cpu
-    );
+    if (f.cpu) {
+
+        return (
+            f.state === "crouch"
+        );
+    }
+
+    return keys["arrowdown"];
 }
 
 
@@ -826,30 +1183,66 @@ function canAutoGuard(
 }
 
 
+/* =========================================================
+   ATTACK START
+========================================================= */
+
 function startAttack(
     f,
     type
 ) {
 
     if (!running) {
-        return;
+        return false;
     }
 
     if (busy(f)) {
-        return;
+        return false;
     }
 
     if (f.attack) {
-        return;
+        return false;
     }
+
+
+    /* =========================
+       COOLDOWN CHECK
+    ========================= */
+
+    if (
+        f.cooldowns[type] > 0
+    ) {
+
+        if (!f.cpu) {
+
+            showHitText(
+                "COOLDOWN " +
+                Math.ceil(
+                    f.cooldowns[type] / 60
+                ),
+                "#ff6666"
+            );
+        }
+
+        return false;
+    }
+
 
     f.attack = type;
 
     f.attackFrame = 0;
 
     f.attackConnected = false;
+
+    f.lastAttack = type;
+
+    return true;
 }
 
+
+/* =========================================================
+   ATTACK STATE
+========================================================= */
 
 function attackActive(f) {
 
@@ -863,9 +1256,12 @@ function attackActive(f) {
         ];
 
     return (
-        f.attackFrame >= a.startup &&
+        f.attackFrame >=
+        a.startup &&
+
         f.attackFrame <
-        a.startup + a.active
+        a.startup +
+        a.active
     );
 }
 
@@ -890,6 +1286,10 @@ function attackFinished(f) {
 }
 
 
+/* =========================================================
+   RANGE
+========================================================= */
+
 function isInsideRange(
     attacker,
     defender
@@ -910,6 +1310,7 @@ function isInsideRange(
             defender
         ) > a.range
     ) {
+
         return false;
     }
 
@@ -923,13 +1324,9 @@ function isInsideRange(
         direction !==
         attacker.facing
     ) {
+
         return false;
     }
-
-    /*
-        상대의 높이 차이가 너무 크면
-        공격이 닿지 않는다.
-    */
 
     if (
         Math.abs(
@@ -937,6 +1334,7 @@ function isInsideRange(
             defender.y
         ) > 105
     ) {
+
         return false;
     }
 
@@ -944,21 +1342,24 @@ function isInsideRange(
 }
 
 
+/* =========================================================
+   GUARD LOGIC
+========================================================= */
+
 function isGuarding(
     defender,
     attack
 ) {
 
     const crouching =
-        defender.cpu
-        ? defender.aiGuard > 0 &&
-          defender.state === "crouch"
-        : isCrouching(defender);
+        isCrouching(defender);
+
 
     /*
-       상단:
-       서서 가드 가능
-       앉아 있으면 피함
+       HIGH
+
+       서서 가드
+       앉으면 회피
     */
 
     if (
@@ -966,25 +1367,31 @@ function isGuarding(
     ) {
 
         if (crouching) {
+
             return "evade";
         }
 
         return true;
     }
 
+
     /*
-       중단:
-       서서/앉아서 가드 가능
+       MID
+
+       서서/앉아서 둘 다 가드
     */
 
     if (
         attack.level === "mid"
     ) {
+
         return true;
     }
 
+
     /*
-       하단:
+       LOW
+
        앉아서만 가드
     */
 
@@ -995,9 +1402,14 @@ function isGuarding(
         return crouching;
     }
 
+
     return false;
 }
 
+
+/* =========================================================
+   HIT TEXT
+========================================================= */
 
 function showHitText(
     text,
@@ -1032,13 +1444,16 @@ function showHitText(
 }
 
 
-function showCombo(
-    fighter
-) {
+/* =========================================================
+   COMBO
+========================================================= */
+
+function showCombo(fighter) {
 
     if (
         fighter.combo < 2
     ) {
+
         return;
     }
 
@@ -1068,6 +1483,10 @@ function showCombo(
 }
 
 
+/* =========================================================
+   SCREEN FLASH
+========================================================= */
+
 function flashScreen() {
 
     flashEl.classList.remove(
@@ -1081,6 +1500,10 @@ function flashScreen() {
     );
 }
 
+
+/* =========================================================
+   HIT RESOLUTION
+========================================================= */
 
 function resolveHit(
     attacker,
@@ -1102,21 +1525,20 @@ function resolveHit(
             defender
         )
     ) {
+
         return;
     }
-
-    /*
-       한 공격에서 한 번만 맞는다.
-    */
 
     if (
         attacker.attackConnected
     ) {
+
         return;
     }
 
     attacker.attackConnected =
         true;
+
 
     const guard =
         isGuarding(
@@ -1124,9 +1546,10 @@ function resolveHit(
             a
         );
 
-    /*
-       상단을 앉아서 회피
-    */
+
+    /* =========================
+       HIGH CRUSH
+    ========================= */
 
     if (
         guard === "evade"
@@ -1142,11 +1565,14 @@ function resolveHit(
         return;
     }
 
-    /*
-       가드
-    */
 
-    if (guard === true) {
+    /* =========================
+       BLOCK
+    ========================= */
+
+    if (
+        guard === true
+    ) {
 
         const damage =
             Math.max(
@@ -1162,8 +1588,7 @@ function resolveHit(
             a.guardstun;
 
         defender.vx =
-            attacker.facing *
-            2;
+            attacker.facing * 2;
 
         defender.state =
             "guard";
@@ -1174,7 +1599,7 @@ function resolveHit(
         showHitText(
             a.level.toUpperCase() +
             " GUARD",
-            "#80d9ff"
+            "#71d7ff"
         );
 
         spawnImpact(
@@ -1183,24 +1608,22 @@ function resolveHit(
             "#62caff"
         );
 
-        /*
-           가드하면 기존 콤보 끊김
-        */
-
         attacker.combo = 0;
 
         return;
     }
 
-    /*
-       실제 피격
-    */
+
+    /* =========================
+       REAL HIT
+    ========================= */
 
     let damage =
         a.damage;
 
+
     /*
-       공중 콤보에서는 데미지 감소
+       공중 콤보 데미지 감소
     */
 
     if (
@@ -1214,6 +1637,7 @@ function resolveHit(
             );
     }
 
+
     damage =
         Math.max(
             1,
@@ -1221,6 +1645,7 @@ function resolveHit(
                 damage
             )
         );
+
 
     defender.hp -= damage;
 
@@ -1244,9 +1669,10 @@ function resolveHit(
     defender.state =
         "hit";
 
-    /*
-       런처
-    */
+
+    /* =========================
+       LAUNCHER
+    ========================= */
 
     if (
         a.launcher &&
@@ -1279,6 +1705,7 @@ function resolveHit(
         );
     }
 
+
     spawnImpact(
         defender.x,
         defender.y + 85,
@@ -1293,6 +1720,10 @@ function resolveHit(
 }
 
 
+/* =========================================================
+   ATTACK UPDATE
+========================================================= */
+
 function updateAttack(
     f,
     opponent
@@ -1304,9 +1735,6 @@ function updateAttack(
 
     f.attackFrame++;
 
-    /*
-       공격 활성 프레임
-    */
 
     if (
         attackActive(f)
@@ -1318,9 +1746,31 @@ function updateAttack(
         );
     }
 
+
+    /*
+       공격 종료
+
+       여기서 해당 기술의 쿨타임을 시작
+    */
+
     if (
         attackFinished(f)
     ) {
+
+        const usedAttack =
+            f.attack;
+
+        const attackData =
+            ATTACKS[
+                usedAttack
+            ];
+
+
+        f.cooldowns[
+            usedAttack
+        ] =
+            attackData.cooldown;
+
 
         f.attack = null;
 
@@ -1332,15 +1782,42 @@ function updateAttack(
 }
 
 
+/* =========================================================
+   COOLDOWN UPDATE
+========================================================= */
+
+function updateCooldowns(f) {
+
+    if (!f) {
+        return;
+    }
+
+    for (
+        const type in f.cooldowns
+    ) {
+
+        if (
+            f.cooldowns[type] > 0
+        ) {
+
+            f.cooldowns[type]--;
+        }
+    }
+}
+
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+let particles = [];
+
+
 function spawnImpact(
     x,
     y,
     color
 ) {
-
-    /*
-       Canvas 파티클
-    */
 
     for (
         let i = 0;
@@ -1362,7 +1839,8 @@ function spawnImpact(
                 (Math.random() - .5)
                 * 12,
 
-            life: 20 +
+            life:
+                20 +
                 Math.random() * 15,
 
             color: color,
@@ -1373,9 +1851,6 @@ function spawnImpact(
         });
     }
 }
-
-
-let particles = [];
 
 
 function updateParticles() {
@@ -1400,12 +1875,17 @@ function updateParticles() {
 }
 
 
+/* =========================================================
+   PLAYER
+========================================================= */
+
 function updatePlayer() {
 
     faceOpponent(
         player,
         cpu
     );
+
 
     if (
         player.knockdown > 0
@@ -1421,22 +1901,21 @@ function updatePlayer() {
         return;
     }
 
+
     if (
         player.hitstun > 0
     ) {
 
         player.hitstun--;
 
-        player.x += player.vx;
+        player.x +=
+            player.vx;
 
         player.vx *= .87;
 
         player.state =
             "hit";
 
-        /*
-           空중 상태라면 중력 적용
-        */
 
         if (
             player.airborne
@@ -1446,6 +1925,7 @@ function updatePlayer() {
 
             player.y +=
                 player.vy;
+
 
             if (
                 player.y <= 0
@@ -1457,12 +1937,12 @@ function updatePlayer() {
 
                 player.airborne =
                     false;
-
             }
         }
 
         return;
     }
+
 
     if (
         player.blockstun > 0
@@ -1481,6 +1961,7 @@ function updatePlayer() {
         return;
     }
 
+
     if (
         player.airborne
     ) {
@@ -1489,6 +1970,7 @@ function updatePlayer() {
 
         player.y +=
             player.vy;
+
 
         if (
             player.y <= 0
@@ -1502,6 +1984,7 @@ function updatePlayer() {
                 false;
         }
 
+
         if (
             player.attack
         ) {
@@ -1514,6 +1997,7 @@ function updatePlayer() {
 
         return;
     }
+
 
     if (
         player.attack
@@ -1530,7 +2014,9 @@ function updatePlayer() {
         return;
     }
 
+
     let moving = false;
+
 
     if (
         keys["arrowleft"]
@@ -1541,6 +2027,7 @@ function updatePlayer() {
         moving = true;
     }
 
+
     if (
         keys["arrowright"]
     ) {
@@ -1550,9 +2037,6 @@ function updatePlayer() {
         moving = true;
     }
 
-    /*
-       앉기
-    */
 
     if (
         keys["arrowdown"]
@@ -1560,8 +2044,9 @@ function updatePlayer() {
 
         player.state =
             "crouch";
-
     }
+
+
     else if (
         keys["arrowup"] &&
         player.y === 0
@@ -1575,8 +2060,9 @@ function updatePlayer() {
 
         player.state =
             "jump";
-
     }
+
+
     else if (
         keys["a"]
     ) {
@@ -1585,8 +2071,9 @@ function updatePlayer() {
             player,
             "high"
         );
-
     }
+
+
     else if (
         keys["s"]
     ) {
@@ -1595,8 +2082,9 @@ function updatePlayer() {
             player,
             "mid"
         );
-
     }
+
+
     else if (
         keys["d"]
     ) {
@@ -1605,8 +2093,9 @@ function updatePlayer() {
             player,
             "low"
         );
-
     }
+
+
     else if (
         keys["f"]
     ) {
@@ -1615,8 +2104,9 @@ function updatePlayer() {
             player,
             "launcher"
         );
-
     }
+
+
     else if (
         canAutoGuard(
             player,
@@ -1626,21 +2116,24 @@ function updatePlayer() {
 
         player.state =
             "guard";
-
     }
+
+
     else if (
         moving
     ) {
 
         player.state =
             "walk";
-
     }
+
+
     else {
 
         player.state =
             "idle";
     }
+
 
     player.x =
         clamp(
@@ -1651,12 +2144,17 @@ function updatePlayer() {
 }
 
 
+/* =========================================================
+   CPU
+========================================================= */
+
 function updateCPU() {
 
     faceOpponent(
         cpu,
         player
     );
+
 
     if (
         cpu.knockdown > 0
@@ -1669,6 +2167,7 @@ function updateCPU() {
 
         return;
     }
+
 
     if (
         cpu.hitstun > 0
@@ -1684,6 +2183,7 @@ function updateCPU() {
         cpu.state =
             "hit";
 
+
         if (
             cpu.airborne
         ) {
@@ -1692,6 +2192,7 @@ function updateCPU() {
 
             cpu.y +=
                 cpu.vy;
+
 
             if (
                 cpu.y <= 0
@@ -1708,6 +2209,7 @@ function updateCPU() {
 
         return;
     }
+
 
     if (
         cpu.blockstun > 0
@@ -1726,6 +2228,7 @@ function updateCPU() {
         return;
     }
 
+
     if (
         cpu.airborne
     ) {
@@ -1734,6 +2237,7 @@ function updateCPU() {
 
         cpu.y +=
             cpu.vy;
+
 
         if (
             cpu.y <= 0
@@ -1747,6 +2251,7 @@ function updateCPU() {
                 false;
         }
 
+
         if (
             cpu.attack
         ) {
@@ -1759,6 +2264,7 @@ function updateCPU() {
 
         return;
     }
+
 
     if (
         cpu.attack
@@ -1775,13 +2281,16 @@ function updateCPU() {
         return;
     }
 
+
     const d =
         distance(
             cpu,
             player
         );
 
+
     cpu.aiTimer++;
+
 
     if (
         cpu.aiAttackCooldown > 0
@@ -1790,8 +2299,9 @@ function updateCPU() {
         cpu.aiAttackCooldown--;
     }
 
+
     /*
-       CPU 가드 판단
+       랜덤 가드
     */
 
     if (
@@ -1804,8 +2314,8 @@ function updateCPU() {
             Math.floor(
                 Math.random() * 30
             );
-
     }
+
 
     if (
         cpu.aiGuard > 0
@@ -1813,10 +2323,6 @@ function updateCPU() {
 
         cpu.aiGuard--;
 
-        /*
-           플레이어가 아래 공격을 자주 쓰면
-           앉아서 가드
-        */
 
         if (
             player.attack === "low"
@@ -1824,8 +2330,8 @@ function updateCPU() {
 
             cpu.state =
                 "crouch";
-
         }
+
         else {
 
             cpu.state =
@@ -1835,8 +2341,9 @@ function updateCPU() {
         return;
     }
 
+
     /*
-       거리 조절
+       거리 좁히기
     */
 
     if (
@@ -1848,8 +2355,8 @@ function updateCPU() {
         ) {
 
             cpu.x -= 2.4;
-
         }
+
         else {
 
             cpu.x += 2.4;
@@ -1861,6 +2368,7 @@ function updateCPU() {
         return;
     }
 
+
     /*
        공격
     */
@@ -1869,54 +2377,48 @@ function updateCPU() {
         cpu.aiAttackCooldown <= 0
     ) {
 
-        const r =
-            Math.random();
+        const available = [];
+
+
+        for (
+            const type in cpu.cooldowns
+        ) {
+
+            if (
+                cpu.cooldowns[type] <= 0
+            ) {
+
+                available.push(type);
+            }
+        }
+
 
         if (
-            r < .36
+            available.length
         ) {
 
-            startAttack(
-                cpu,
-                "high"
-            );
-
-        }
-        else if (
-            r < .66
-        ) {
+            const type =
+                available[
+                    Math.floor(
+                        Math.random() *
+                        available.length
+                    )
+                ];
 
             startAttack(
                 cpu,
-                "mid"
-            );
-
-        }
-        else if (
-            r < .83
-        ) {
-
-            startAttack(
-                cpu,
-                "low"
-            );
-
-        }
-        else {
-
-            startAttack(
-                cpu,
-                "launcher"
+                type
             );
         }
+
 
         cpu.aiAttackCooldown =
             25 +
             Math.floor(
                 Math.random() * 35
             );
-
     }
+
     else {
 
         cpu.state =
@@ -1925,6 +2427,10 @@ function updateCPU() {
 }
 
 
+/* =========================================================
+   COMBO TIMER
+========================================================= */
+
 function updateCombos() {
 
     if (
@@ -1932,20 +2438,21 @@ function updateCombos() {
     ) {
 
         player.comboTimer--;
-
     }
+
     else {
 
         player.combo = 0;
     }
+
 
     if (
         cpu.comboTimer > 0
     ) {
 
         cpu.comboTimer--;
-
     }
+
     else {
 
         cpu.combo = 0;
@@ -1953,9 +2460,14 @@ function updateCombos() {
 }
 
 
+/* =========================================================
+   GAME TIMER
+========================================================= */
+
 function updateTimer(dt) {
 
     secondAccumulator += dt;
+
 
     if (
         secondAccumulator >= 1000
@@ -1967,6 +2479,7 @@ function updateTimer(dt) {
 
         timerEl.innerText =
             gameTime;
+
 
         if (
             gameTime <= 0
@@ -1980,8 +2493,8 @@ function updateTimer(dt) {
                 gameOver(
                     "PLAYER WINS!"
                 );
-
             }
+
             else if (
                 cpu.hp >
                 player.hp
@@ -1990,8 +2503,8 @@ function updateTimer(dt) {
                 gameOver(
                     "CPU WINS!"
                 );
-
             }
+
             else {
 
                 gameOver(
@@ -2002,6 +2515,10 @@ function updateTimer(dt) {
     }
 }
 
+
+/* =========================================================
+   GAME OVER
+========================================================= */
 
 function gameOver(text) {
 
@@ -2021,6 +2538,10 @@ function gameOver(text) {
 }
 
 
+/* =========================================================
+   WINNER
+========================================================= */
+
 function checkWinner() {
 
     if (
@@ -2029,9 +2550,6 @@ function checkWinner() {
 
         player.hp = 0;
 
-        player.state =
-            "down";
-
         gameOver(
             "CPU WINS!"
         );
@@ -2039,14 +2557,12 @@ function checkWinner() {
         return true;
     }
 
+
     if (
         cpu.hp <= 0
     ) {
 
         cpu.hp = 0;
-
-        cpu.state =
-            "down";
 
         gameOver(
             "PLAYER WINS!"
@@ -2055,13 +2571,78 @@ function checkWinner() {
         return true;
     }
 
+
     return false;
 }
 
 
-/* -----------------------------
-   Canvas Fighter Rendering
------------------------------ */
+/* =========================================================
+   COOLDOWN UI
+========================================================= */
+
+function updateCooldownUI() {
+
+    if (!player) {
+        return;
+    }
+
+
+    for (
+        const type in skillElements
+    ) {
+
+        const skill =
+            skillElements[type];
+
+        const cooldown =
+            player.cooldowns[type];
+
+        const max =
+            ATTACKS[type].cooldown;
+
+
+        if (
+            cooldown > 0
+        ) {
+
+            skill.box.classList.remove(
+                "ready"
+            );
+
+            skill.box.classList.add(
+                "cooling"
+            );
+
+
+            const percent =
+                (cooldown / max) * 100;
+
+
+            skill.fill.style.height =
+                percent + "%";
+
+        }
+
+        else {
+
+            skill.box.classList.remove(
+                "cooling"
+            );
+
+            skill.box.classList.add(
+                "ready"
+            );
+
+            skill.fill.style.height =
+                "0%";
+        }
+    }
+}
+
+
+/* =========================================================
+   DRAW HELPERS
+========================================================= */
 
 function roundedRect(
     ctx,
@@ -2121,6 +2702,10 @@ function limb(
 }
 
 
+/* =========================================================
+   DRAW FIGHTER
+========================================================= */
+
 function drawFighter(
     f,
     color,
@@ -2130,13 +2715,16 @@ function drawFighter(
     const baseY =
         H - 130 - f.y;
 
+
     const x =
         f.x;
+
 
     let bob =
         Math.sin(
             f.animationTime * .12
         ) * 2;
+
 
     if (
         f.state === "hit"
@@ -2145,24 +2733,24 @@ function drawFighter(
         bob = 0;
     }
 
-    /*
-       방향을 좌우 반전
-    */
 
     ctx.save();
+
 
     ctx.translate(
         x,
         baseY + bob
     );
 
+
     ctx.scale(
         f.facing,
         1
     );
 
+
     /*
-       그림자
+       SHADOW
     */
 
     ctx.save();
@@ -2191,27 +2779,21 @@ function drawFighter(
 
     ctx.restore();
 
+
+    let armFront = 0;
+    let armBack = 0;
+
+    let legFront = 0;
+    let legBack = 0;
+
+    let torsoLean = 0;
+
+    let crouch = 0;
+
+
     /*
-       애니메이션 파라미터
+       WALK
     */
-
-    let armFront =
-        0;
-
-    let armBack =
-        0;
-
-    let legFront =
-        0;
-
-    let legBack =
-        0;
-
-    let torsoLean =
-        0;
-
-    let crouch =
-        0;
 
     if (
         f.state === "walk"
@@ -2232,27 +2814,38 @@ function drawFighter(
             .04;
     }
 
+
+    /*
+       CROUCH
+    */
+
     if (
         f.state === "crouch"
     ) {
 
-        crouch =
-            18;
+        crouch = 18;
 
-        torsoLean =
-            -.08;
+        torsoLean = -.08;
     }
+
+
+    /*
+       GUARD
+    */
 
     if (
         f.state === "guard"
     ) {
 
-        armFront =
-            -.9;
+        armFront = -.9;
 
-        armBack =
-            -.55;
+        armBack = -.55;
     }
+
+
+    /*
+       HIGH
+    */
 
     if (
         f.state === "attack" &&
@@ -2262,68 +2855,85 @@ function drawFighter(
         const t =
             f.attackFrame;
 
-        if (t < 10) {
 
-            armFront =
-                -.5;
+        if (
+            t < 10
+        ) {
 
+            armFront = -.5;
         }
+
         else {
 
-            armFront =
-                -1.65;
+            armFront = -1.65;
         }
     }
+
+
+    /*
+       MID
+    */
 
     if (
         f.state === "attack" &&
         f.attack === "mid"
     ) {
 
-        legFront =
-            -1.25;
+        legFront = -1.25;
 
-        torsoLean =
-            .1;
+        torsoLean = .1;
     }
+
+
+    /*
+       LOW
+    */
 
     if (
         f.state === "attack" &&
         f.attack === "low"
     ) {
 
-        crouch =
-            14;
+        crouch = 14;
 
-        legFront =
-            -1.25;
+        legFront = -1.25;
     }
+
+
+    /*
+       LAUNCHER
+    */
 
     if (
         f.state === "attack" &&
         f.attack === "launcher"
     ) {
 
-        armFront =
-            -1.7;
+        armFront = -1.7;
 
-        torsoLean =
-            -.15;
+        torsoLean = -.15;
     }
+
+
+    /*
+       HIT
+    */
 
     if (
         f.state === "hit"
     ) {
 
-        torsoLean =
-            -.28;
+        torsoLean = -.28;
 
-        armFront =
-            .7;
+        armFront = .7;
 
-        armBack =
-            .8;
+        armBack = .8;
     }
+
+
+    /*
+       DOWN
+    */
 
     if (
         f.state === "down"
@@ -2334,49 +2944,57 @@ function drawFighter(
         );
     }
 
-    /*
-       Body
-    */
 
     const bodyY =
         -95 + crouch;
 
+
     ctx.save();
+
 
     ctx.rotate(
         torsoLean
     );
 
+
     /*
-       뒤쪽 다리
+       BACK LEG
     */
 
     limb(
         ctx,
         -10,
         bodyY + 42,
-        -20 + Math.sin(legBack) * 20,
+        -20 +
+            Math.sin(
+                legBack
+            ) * 20,
         bodyY + 100,
         18,
         accent
     );
 
+
     /*
-       앞쪽 다리
+       FRONT LEG
     */
 
     limb(
         ctx,
         10,
         bodyY + 42,
-        25 + Math.sin(legFront) * 22,
+        25 +
+            Math.sin(
+                legFront
+            ) * 22,
         bodyY + 100,
         18,
         color
     );
 
+
     /*
-       몸통
+       BODY
     */
 
     ctx.fillStyle =
@@ -2391,12 +3009,14 @@ function drawFighter(
         14
     );
 
+
     /*
-       어깨
+       SHOULDERS
     */
 
     ctx.fillStyle =
         accent;
+
 
     ctx.beginPath();
 
@@ -2410,6 +3030,7 @@ function drawFighter(
 
     ctx.fill();
 
+
     ctx.beginPath();
 
     ctx.arc(
@@ -2422,8 +3043,9 @@ function drawFighter(
 
     ctx.fill();
 
+
     /*
-       뒤쪽 팔
+       BACK ARM
     */
 
     limb(
@@ -2431,14 +3053,17 @@ function drawFighter(
         -18,
         bodyY + 5,
         -35 +
-            Math.sin(armBack) * 25,
+            Math.sin(
+                armBack
+            ) * 25,
         bodyY + 48,
         15,
         accent
     );
 
+
     /*
-       앞쪽 팔
+       FRONT ARM
     */
 
     limb(
@@ -2446,18 +3071,22 @@ function drawFighter(
         18,
         bodyY + 5,
         37 +
-            Math.sin(armFront) * 42,
+            Math.sin(
+                armFront
+            ) * 42,
         bodyY + 43,
         16,
         color
     );
 
+
     /*
-       머리
+       HEAD
     */
 
     ctx.fillStyle =
         "#e6a77d";
+
 
     ctx.beginPath();
 
@@ -2471,12 +3100,14 @@ function drawFighter(
 
     ctx.fill();
 
+
     /*
-       머리카락
+       HAIR
     */
 
     ctx.fillStyle =
         "#15161a";
+
 
     ctx.beginPath();
 
@@ -2490,12 +3121,14 @@ function drawFighter(
 
     ctx.fill();
 
+
     /*
-       얼굴 방향 표시
+       EYE
     */
 
     ctx.fillStyle =
         "#151515";
+
 
     ctx.beginPath();
 
@@ -2509,10 +3142,12 @@ function drawFighter(
 
     ctx.fill();
 
+
     ctx.restore();
 
+
     /*
-       공격 이펙트
+       ATTACK EFFECT
     */
 
     if (
@@ -2525,8 +3160,9 @@ function drawFighter(
         );
     }
 
+
     /*
-       가드 효과
+       GUARD EFFECT
     */
 
     if (
@@ -2551,9 +3187,14 @@ function drawFighter(
         ctx.stroke();
     }
 
+
     ctx.restore();
 }
 
+
+/* =========================================================
+   ATTACK EFFECT
+========================================================= */
 
 function drawAttackEffect(
     f,
@@ -2565,19 +3206,23 @@ function drawAttackEffect(
             f.attack
         ];
 
+
     if (!a) {
         return;
     }
 
-    const active =
-        attackActive(f);
 
-    if (!active) {
+    if (
+        !attackActive(f)
+    ) {
+
         return;
     }
 
+
     let color =
-        "#ffffff";
+        "#fff";
+
 
     if (
         a.level === "high"
@@ -2585,16 +3230,16 @@ function drawAttackEffect(
 
         color =
             "#ffcc62";
-
     }
+
     else if (
         a.level === "mid"
     ) {
 
         color =
             "#62d8ff";
-
     }
+
     else if (
         a.level === "low"
     ) {
@@ -2603,14 +3248,14 @@ function drawAttackEffect(
             "#ff6a8a";
     }
 
+
     ctx.strokeStyle =
         color;
 
-    ctx.lineWidth =
-        8;
+    ctx.lineWidth = 8;
 
-    ctx.globalAlpha =
-        .8;
+    ctx.globalAlpha = .8;
+
 
     ctx.beginPath();
 
@@ -2624,10 +3269,14 @@ function drawAttackEffect(
 
     ctx.stroke();
 
-    ctx.globalAlpha =
-        1;
+
+    ctx.globalAlpha = 1;
 }
 
+
+/* =========================================================
+   SCENE
+========================================================= */
 
 function drawScene() {
 
@@ -2638,8 +3287,9 @@ function drawScene() {
         H
     );
 
+
     /*
-       배경 기둥
+       BACKGROUND COLUMNS
     */
 
     for (
@@ -2651,6 +3301,7 @@ function drawScene() {
         const x =
             i * (W / 7);
 
+
         const gradient =
             ctx.createLinearGradient(
                 x,
@@ -2659,23 +3310,28 @@ function drawScene() {
                 0
             );
 
+
         gradient.addColorStop(
             0,
             "rgba(0,0,0,.4)"
         );
+
 
         gradient.addColorStop(
             .5,
             "rgba(255,255,255,.05)"
         );
 
+
         gradient.addColorStop(
             1,
             "rgba(0,0,0,.4)"
         );
 
+
         ctx.fillStyle =
             gradient;
+
 
         ctx.fillRect(
             x,
@@ -2685,14 +3341,16 @@ function drawScene() {
         );
     }
 
+
     /*
-       바닥 격자
+       FLOOR GRID
     */
 
     ctx.strokeStyle =
         "rgba(255,255,255,.045)";
 
     ctx.lineWidth = 1;
+
 
     for (
         let y = H - 118;
@@ -2715,6 +3373,7 @@ function drawScene() {
         ctx.stroke();
     }
 
+
     for (
         let x = 0;
         x < W;
@@ -2736,8 +3395,9 @@ function drawScene() {
         ctx.stroke();
     }
 
+
     /*
-       파티클
+       PARTICLES
     */
 
     for (
@@ -2750,8 +3410,10 @@ function drawScene() {
                 p.life / 35
             );
 
+
         ctx.fillStyle =
             p.color;
+
 
         ctx.beginPath();
 
@@ -2766,7 +3428,9 @@ function drawScene() {
         ctx.fill();
     }
 
+
     ctx.globalAlpha = 1;
+
 
     if (player) {
 
@@ -2776,6 +3440,7 @@ function drawScene() {
             "#173e9d"
         );
     }
+
 
     if (cpu) {
 
@@ -2788,11 +3453,16 @@ function drawScene() {
 }
 
 
+/* =========================================================
+   RENDER
+========================================================= */
+
 function render() {
 
     if (!player || !cpu) {
         return;
     }
+
 
     playerHp.style.width =
         Math.max(
@@ -2800,15 +3470,23 @@ function render() {
             player.hp
         ) + "%";
 
+
     cpuHp.style.width =
         Math.max(
             0,
             cpu.hp
         ) + "%";
 
+
+    updateCooldownUI();
+
     drawScene();
 }
 
+
+/* =========================================================
+   UPDATE
+========================================================= */
 
 function update(dt) {
 
@@ -2820,14 +3498,20 @@ function update(dt) {
 
     updateParticles();
 
+    updateCooldowns(player);
+
+    updateCooldowns(cpu);
+
     updateTimer(dt);
 
     checkWinner();
+
 
     if (player) {
 
         player.animationTime++;
     }
+
 
     if (cpu) {
 
@@ -2836,61 +3520,9 @@ function update(dt) {
 }
 
 
-function updateCombos() {
-
-    if (
-        player.comboTimer > 0
-    ) {
-
-        player.comboTimer--;
-
-    }
-    else {
-
-        player.combo = 0;
-    }
-
-    if (
-        cpu.comboTimer > 0
-    ) {
-
-        cpu.comboTimer--;
-
-    }
-    else {
-
-        cpu.combo = 0;
-    }
-}
-
-
-function checkWinner() {
-
-    if (
-        player.hp <= 0
-    ) {
-
-        player.hp = 0;
-
-        gameOver(
-            "CPU WINS!"
-        );
-
-        return;
-    }
-
-    if (
-        cpu.hp <= 0
-    ) {
-
-        cpu.hp = 0;
-
-        gameOver(
-            "PLAYER WINS!"
-        );
-    }
-}
-
+/* =========================================================
+   LOOP
+========================================================= */
 
 function loop(now) {
 
@@ -2901,17 +3533,21 @@ function loop(now) {
         return;
     }
 
+
     const dt =
         Math.min(
             40,
             now - lastTime
         );
 
+
     lastTime = now;
+
 
     update(dt);
 
     render();
+
 
     if (running) {
 
@@ -2921,6 +3557,10 @@ function loop(now) {
     }
 }
 
+
+/* =========================================================
+   START BUTTON
+========================================================= */
 
 startButton.addEventListener(
     "click",
@@ -2933,8 +3573,9 @@ startButton.addEventListener(
 </html>
 """
 
+
 components.html(
     GAME,
     height=750,
-    scrolling=False,
+    scrolling=False
 )
